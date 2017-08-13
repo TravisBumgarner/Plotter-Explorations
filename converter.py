@@ -1,21 +1,20 @@
 # README
 # Start with Square Images Only
 
-
 import os
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 # User Defined Constants
-OUTPUT_LENGTH = 200  # PX
-SAMPLE_LENGTH = 5
+OUTPUT_LENGTH = 100 # PX
+SAMPLE_LENGTH = 1 # pixels per sample
 
-CIRCLE_SIZES = [0, 1, 3, 5]  # PX
+CIRCLE_RADII = [0, .25, .5, .75, 1]  # PX
 
 # Other Constants
 CIRCLE_CENTER = (SAMPLE_LENGTH/2, SAMPLE_LENGTH/2)
 NUMBER_OF_SAMPLES = int(OUTPUT_LENGTH/SAMPLE_LENGTH)  # Number of samples to make in one direction, used for generating output circle grid.
-OUTPUT_CIRCLE_GRID = [[0 for col in range(NUMBER_OF_SAMPLES)] for row in range(NUMBER_OF_SAMPLES)]
+output_circle_grid = [[0 for col in range(NUMBER_OF_SAMPLES)] for row in range(NUMBER_OF_SAMPLES)]
 
 def sample_area(img, x_start, y_start, length):
     total = 0
@@ -33,6 +32,13 @@ def sample_area(img, x_start, y_start, length):
     return average
 
 
+def pixels_to_circles(pxl_value, circle_list):
+    old_range = 255 - 0
+    new_range = len(circle_list)
+    new_value = round(((pxl_value - 0) * new_range) / old_range)
+    return new_value
+
+
 def convert_image(img_location):
     with Image.open(img_location) as img:
         INPUT_LENGTH, _ = img.size
@@ -41,18 +47,20 @@ def convert_image(img_location):
         if INPUT_LENGTH > OUTPUT_LENGTH:
             img = img.resize((OUTPUT_LENGTH, OUTPUT_LENGTH))
 
+        # Sample Image, section by section
         x_idx = 0
         for x in range(0, OUTPUT_LENGTH, SAMPLE_LENGTH):
             y_idx = 0
             for y in range(0, OUTPUT_LENGTH, SAMPLE_LENGTH):
-                OUTPUT_CIRCLE_GRID[y_idx][x_idx] = sample_area(img, x, y, SAMPLE_LENGTH)
+                output_circle_grid[y_idx][x_idx] = sample_area(img, x, y, SAMPLE_LENGTH)
+
                 y_idx += 1
             x_idx += 1
 
-
+        # Convert list of lists of pixel values to a greyscale image
         pixels_out = []
         image_out = Image.new("L", (NUMBER_OF_SAMPLES, NUMBER_OF_SAMPLES)) # “L” 8-bit greyscale. 0 means black, 255 means white.
-        for row in OUTPUT_CIRCLE_GRID:
+        for row in output_circle_grid:
             for cell in row:
                 pixels_out.append(cell)
         image_out.putdata(pixels_out)
@@ -63,6 +71,21 @@ def convert_image(img_location):
         output_location = os.path.join(filepath, name + '_output2.' + extension)
         img.save(output_location)
 
+        # Rasterbate
+        im = Image.new("L", (OUTPUT_LENGTH * 10, OUTPUT_LENGTH * 10)) # TODO rewrite OUTPUT_LENGTH variable.
+        draw = ImageDraw.Draw(im)
+        for x, row in enumerate(output_circle_grid):
+            for y, cell_col in enumerate(row):
+                circle_radius = pixels_to_circles(cell_col, CIRCLE_RADII)
+                draw.ellipse([x * 10 - circle_radius,
+                              y * 10 - circle_radius,
+                              x * 10 + circle_radius,
+                              y * 10 + circle_radius],
+                              fill=255)
+        im.save('./test_cats.jpg')
+
+
 
 if __name__ == '__main__':
     convert_image('./test2.jpg')
+
