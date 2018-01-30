@@ -32,8 +32,10 @@ class RasterImage():
         self.output_units = 'in'
         self.output_width = 10
         self.output_height = 10
-        self.output_density = 0.05
-        self.output_max_diameter = 0.04
+        self.output_density = 0.5
+        self.output_max_diameter = 0.4
+
+        self.test_img = Image.new('RGB', (5000, 5000))
 
     def sample_image(self):
         """
@@ -50,12 +52,19 @@ class RasterImage():
         x_start = 0
         y_start = 0
 
+        test_img_x = 0
+        test_img_y = 0
+
         while x_start + x_pps <= self.input_width:
             while y_start + y_pps <= self.input_height:
-                self.sample_image_area(x_start, x_pps, y_start, y_pps)
+                luminance = self.sample_image_area(x_start, x_pps, y_start, y_pps)
                 y_start += y_pps
+                self.test_img.putpixel((test_img_x, test_image_y), (luminance, luminance, luminance))
+                test_image_y += 1
             y_start = 0
             x_start += x_pps
+            test_image_y = 0
+            test_img_x += 1
 
     def sample_image_area(self, x_start, x_delta, y_start, y_delta, sample_method='luminance'):
         luminance_total = 0
@@ -65,11 +74,11 @@ class RasterImage():
 
         sample_area = x_delta * y_delta
         luminance_average = luminance_total / sample_area
-        print("sampling - ({}, {}) -> {}".format(x_start, y_start, luminance_average))
-        return
+        # print("sampling - ({}, {}) -> {}".format(x_start, y_start, luminance_average))
+        return luminance_average
 
-    def save_test_image(self):
-        pass
+    def save_test_image(self, filename):
+        self.test_img.save(filename)
 
 if __name__ == '__main__':
     r = RasterImage('./src/img.jpg')
