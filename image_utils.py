@@ -1,4 +1,6 @@
 from PIL import Image
+from dxfwrite import DXFEngine as dxf
+
 
 class RasterImage():
     """"
@@ -32,10 +34,12 @@ class RasterImage():
         self.output_units = 'in'
         self.output_width = 10
         self.output_height = 10
-        self.output_density = 0.5
-        self.output_max_diameter = 0.4
+        self.output_density = 0.1
+        self.output_max_diameter = 0.9
 
         self.test_img = Image.new('RGB', (5000, 5000))
+
+        self.dxf_drawing = dxf.drawing('/Users/tbumgarner/Documents/Programming/raster_cutter/foo.dxf')
 
     def sample_image(self):
         """
@@ -59,11 +63,12 @@ class RasterImage():
             while y_start + y_pps <= self.input_height:
                 luminance = self.sample_image_area(x_start, x_pps, y_start, y_pps)
                 y_start += y_pps
-                self.test_img.putpixel((test_img_x, test_image_y), (luminance, luminance, luminance))
-                test_image_y += 1
+                self.test_img.putpixel((test_img_x, test_img_y), (luminance, luminance, luminance))
+                self.dxf_drawing.add(dxf.circle(radius=luminance / 2, center=(test_img_x * 255, test_img_y * 255)))
+                test_img_y += 1
             y_start = 0
             x_start += x_pps
-            test_image_y = 0
+            test_img_y = 0
             test_img_x += 1
 
     def sample_image_area(self, x_start, x_delta, y_start, y_delta, sample_method='luminance'):
@@ -80,7 +85,12 @@ class RasterImage():
     def save_test_image(self, filename):
         self.test_img.save(filename)
 
+    def save_dxf(self, filename):
+        self.dxf_drawing.save()
+
+
 if __name__ == '__main__':
     r = RasterImage('./src/img.jpg')
     r.sample_image()
+    r.save_dxf('/Users/tbumgarner/Documents/Programming/raster_cutter/foo.dxf')
 
