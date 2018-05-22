@@ -37,8 +37,8 @@ class RasterImage():
         self.output_units = 'in'
         self.output_width = 4
         self.output_height = 4
-        self.output_spacing = 0.1
-        self.output_max_diameter = self.output_spacing * 0.9 # max diameter should be slightly smaller than spacing between circles
+        self.output_spacing = 0.15
+        self.output_max_diameter = self.output_spacing * 0.75 # max diameter should be slightly smaller than spacing between circles
         self.output_min_diameter = 0.002 # 1/32"
         self.sample_data = []
 
@@ -46,7 +46,11 @@ class RasterImage():
 
     def luminance_to_inches(self, value):
         # 255 - value inverts the value so that the largest circles are for the darkest places.
-        inches = self.output_min_diameter + (float(255 - value) / float(255) * (self.output_max_diameter - self.output_min_diameter))
+        if value == 255:
+            # Don't print circles for values of 255.
+            inches = 0
+        else:
+            inches = self.output_min_diameter + (float(255 - value) / float(255) * (self.output_max_diameter - self.output_min_diameter))
         return inches
 
     def sample_image(self):
@@ -62,15 +66,20 @@ class RasterImage():
         y = 0
 
         # Swap x and y
-        while x + pixels_per_sample_width <= self.input_width:
-            sample_column_data = []
-            while y + pixels_per_sample_height <= self.input_height:
+        # while x + pixels_per_sample_width <= self.input_width:
+        while y + pixels_per_sample_height <= self.input_height:
+            sample_row_data = []
+            # while y + pixels_per_sample_height <= self.input_height:
+            while x + pixels_per_sample_width <= self.input_width:
                 luminance = self.sample_image_area(x, pixels_per_sample_width, y, pixels_per_sample_height)
-                sample_column_data.append(luminance)
-                y += pixels_per_sample_height
-            y = 0
-            self.sample_data.append(sample_column_data)
-            x += pixels_per_sample_width
+                sample_row_data.append(luminance)
+                # y += pixels_per_sample_height
+                x += pixels_per_sample_width
+            # y = 0
+            x = 0
+            self.sample_data.append(sample_row_data)
+            # x += pixels_per_sample_width
+            y += pixels_per_sample_height
 
     def samples_to_dxf(self):
         x = 0
@@ -94,6 +103,13 @@ class RasterImage():
         # print("sampling - ({}, {}) -> {}".format(x_start, y_start, luminance_average))
         return luminance_average
 
+    def draw_borders(self):
+        # this is all messed up
+        self.dxf_drawing.add(dxf.line(start=(-self.output_width, -self.output_height), end=( self.output_width, -self.output_height)))
+        self.dxf_drawing.add(dxf.line(start=(-self.output_width, -self.output_height), end=(-self.output_width, self.output_height)))
+        self.dxf_drawing.add(dxf.line(start=( self.output_width, -self.output_height), end=( self.output_width, self.output_height)))
+        self.dxf_drawing.add(dxf.line(start=(-self.output_width,  self.output_height), end=( self.output_width, self.output_height)))
+
     def save_dxf(self):
         self.dxf_drawing.save()
 
@@ -102,5 +118,6 @@ if __name__ == '__main__':
     r.sample_image()
     print('image sampled')
     r.samples_to_dxf()
+    # r.draw_borders()
     r.save_dxf()
 
