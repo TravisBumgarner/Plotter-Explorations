@@ -45,7 +45,7 @@ class RasterImage():
         self.dxf_drawing = dxf.drawing('/Users/tbumgarner/Documents/Programming/raster_cutter/foo.dxf')
 
     def luminance_to_inches(self, value):
-        # 255 - value inverts the value so that the largest circles are for the darkest places. 
+        # 255 - value inverts the value so that the largest circles are for the darkest places.
         inches = self.output_min_diameter + (float(255 - value) / float(255) * (self.output_max_diameter - self.output_min_diameter))
         return inches
 
@@ -79,7 +79,7 @@ class RasterImage():
 
         for row in self.sample_data:
             for cell in row:
-                self.dxf_drawing.add(dxf.circle(radius=self.luminance_to_inches(cell), center=(x, y)))
+                self.dxf_drawing.add(dxf.circle(radius=self.luminance_to_inches(cell) / 2, center=(x, y)))
                 y += self.output_spacing
             y = 0
             x += self.output_spacing
