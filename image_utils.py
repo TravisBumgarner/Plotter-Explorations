@@ -38,7 +38,7 @@ class RasterImage():
         self.output_width = 4
         self.output_height = 4
         self.output_spacing = 0.15
-        self.output_max_diameter = self.output_spacing * 0.75 # max diameter should be slightly smaller than spacing between circles
+        self.output_max_diameter = self.output_spacing * 0.9 # max diameter should be slightly smaller than spacing between circles
         self.output_min_diameter = 0.002 # 1/32"
         self.sample_data = []
 
@@ -104,11 +104,15 @@ class RasterImage():
         return luminance_average
 
     def draw_borders(self):
-        # this is all messed up
-        self.dxf_drawing.add(dxf.line(start=(-self.output_width, -self.output_height), end=( self.output_width, -self.output_height)))
-        self.dxf_drawing.add(dxf.line(start=(-self.output_width, -self.output_height), end=(-self.output_width, self.output_height)))
-        self.dxf_drawing.add(dxf.line(start=( self.output_width, -self.output_height), end=( self.output_width, self.output_height)))
-        self.dxf_drawing.add(dxf.line(start=(-self.output_width,  self.output_height), end=( self.output_width, self.output_height)))
+        min_x = 0 - self.output_spacing
+        max_x = self.output_width - self.output_spacing
+        min_y = 0 - self.output_spacing
+        max_y = self.output_height - self.output_spacing
+
+        self.dxf_drawing.add(dxf.line(start=(min_x, min_y), end=(min_x, max_y)))
+        self.dxf_drawing.add(dxf.line(start=(min_x, min_y), end=(max_x, min_y)))
+        self.dxf_drawing.add(dxf.line(start=(max_x, min_y), end=(max_x, max_y)))
+        self.dxf_drawing.add(dxf.line(start=(min_x, max_y), end=(max_x, max_y)))
 
     def save_dxf(self):
         self.dxf_drawing.save()
@@ -118,6 +122,6 @@ if __name__ == '__main__':
     r.sample_image()
     print('image sampled')
     r.samples_to_dxf()
-    # r.draw_borders()
+    r.draw_borders()
     r.save_dxf()
 
