@@ -45,7 +45,8 @@ class RasterImage():
         self.dxf_drawing = dxf.drawing('/Users/tbumgarner/Documents/Programming/raster_cutter/foo.dxf')
 
     def luminance_to_inches(self, value):
-        inches = self.output_min_diameter + (float(value) / float(255) * (self.output_max_diameter - self.output_min_diameter))
+        # 255 - value inverts the value so that the largest circles are for the darkest places. 
+        inches = self.output_min_diameter + (float(255 - value) / float(255) * (self.output_max_diameter - self.output_min_diameter))
         return inches
 
     def sample_image(self):
