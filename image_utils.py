@@ -35,11 +35,11 @@ class RasterImage():
         # self.output_max_diameter = 1 / self.output_spacing - spacing / 2
         #
         self.output_units = 'in'
-        self.output_width = 2
-        self.output_height = 2
-        self.output_spacing = 0.25 # 1/4"
-        self.output_max_diameter = 0.25 - 0.0625 # 1/4" minus 1/16" gap
-        self.output_min_diameter = 0.003125 # 1/32"
+        self.output_width = 4
+        self.output_height = 4
+        self.output_spacing = 0.1
+        self.output_max_diameter = self.output_spacing * 0.9 # max diameter should be slightly smaller than spacing between circles
+        self.output_min_diameter = 0.002 # 1/32"
         self.sample_data = []
 
         self.dxf_drawing = dxf.drawing('/Users/tbumgarner/Documents/Programming/raster_cutter/foo.dxf')
@@ -71,7 +71,6 @@ class RasterImage():
             y = 0
             self.sample_data.append(sample_column_data)
             x += pixels_per_sample_width
-        print(self.sample_data)
 
     def samples_to_dxf(self):
         x = 0
@@ -99,8 +98,9 @@ class RasterImage():
         self.dxf_drawing.save()
 
 if __name__ == '__main__':
-    r = RasterImage('./src/img.jpg')
+    r = RasterImage('./src/chs.jpg')
     r.sample_image()
+    print('image sampled')
     r.samples_to_dxf()
     r.save_dxf()
 
