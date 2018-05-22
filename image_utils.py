@@ -82,14 +82,15 @@ class RasterImage():
             y += pixels_per_sample_height
 
     def samples_to_dxf(self):
-        x = 0
-        y = 0
+        # Start at the center of the first square
+        x = self.output_spacing / 2
+        y = self.output_spacing / 2
 
         for row in self.sample_data:
             for cell in row:
                 self.dxf_drawing.add(dxf.circle(radius=self.luminance_to_inches(cell) / 2, center=(x, y)))
                 y += self.output_spacing
-            y = 0
+            y = self.output_spacing / 2
             x += self.output_spacing
 
     def sample_image_area(self, x_start, x_delta, y_start, y_delta):
@@ -104,10 +105,10 @@ class RasterImage():
         return luminance_average
 
     def draw_borders(self):
-        min_x = 0 - self.output_spacing
-        max_x = self.output_width - self.output_spacing
-        min_y = 0 - self.output_spacing
-        max_y = self.output_height - self.output_spacing
+        min_x = 0
+        max_x = self.output_width - self.output_spacing / 2
+        min_y = 0
+        max_y = self.output_height - self.output_spacing / 2
 
         self.dxf_drawing.add(dxf.line(start=(min_x, min_y), end=(min_x, max_y)))
         self.dxf_drawing.add(dxf.line(start=(min_x, min_y), end=(max_x, min_y)))
