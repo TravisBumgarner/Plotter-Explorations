@@ -38,12 +38,8 @@ class RasterImage():
             return
 
     def luminance_to_inches(self, value):
-        # 255 - value inverts the value so that the largest circles are for the darkest places.
-        if value == 255:
-            # Don't print circles for values of 255.
-            inches = 0
-        else:
-            inches = self.output_min_diameter + (float(255 - value) / float(255) * (self.output_max_diameter - self.output_min_diameter))
+        mod_value = (255 - value) if BLACK_MEANS_SMALL_CIRCLES else value
+        inches = self.output_min_diameter + (float(mod_value) / float(255) * (self.output_max_diameter - self.output_min_diameter))
         return inches
 
     def sample_image(self):
@@ -95,10 +91,10 @@ class RasterImage():
         return luminance_average
 
     def draw_borders(self):
-        min_x = 0
-        max_x = self.output_width - self.output_spacing / 2
-        min_y = 0
-        max_y = self.output_height - self.output_spacing / 2
+        min_x = 0  - self.output_spacing / 2
+        max_x = self.output_width + self.output_spacing / 2
+        min_y = 0  - self.output_spacing / 2
+        max_y = self.output_height + self.output_spacing / 2
 
         self.dxf_drawing.add(dxf.line(start=(min_x, min_y), end=(min_x, max_y)))
         self.dxf_drawing.add(dxf.line(start=(min_x, min_y), end=(max_x, min_y)))
