@@ -66,6 +66,16 @@ class RasterImage():
             y += pixels_per_sample_height
         print('Sampling Complete.')
 
+    def sample_image_area(self, x_start, x_delta, y_start, y_delta):
+        luminance_total = 0
+        for x in range(x_start, x_start + x_delta):
+            for y in range(y_start, y_start + y_delta):
+                luminance_total += self.img.getpixel((x, y))
+
+        sample_area = x_delta * y_delta
+        luminance_average = luminance_total / sample_area
+        return luminance_average
+
     def samples_to_dxf(self):
         print('Converting samples to dxf...')
         # Start at the center of the first square
@@ -79,16 +89,6 @@ class RasterImage():
             y = self.output_spacing / 2
             x += self.output_spacing
         print('Converting Complete.')
-
-    def sample_image_area(self, x_start, x_delta, y_start, y_delta):
-        luminance_total = 0
-        for x in range(x_start, x_start + x_delta):
-            for y in range(y_start, y_start + y_delta):
-                luminance_total += self.img.getpixel((x, y))
-
-        sample_area = x_delta * y_delta
-        luminance_average = luminance_total / sample_area
-        return luminance_average
 
     def draw_borders(self):
         min_x = 0  - self.output_spacing / 2
