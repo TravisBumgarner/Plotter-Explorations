@@ -24,7 +24,7 @@ class RasterImage():
         self.sample_data = []
         self.dxf_drawing = dxf.drawing(DXF_FILE)
 
-        if self.input_width / self.output_width - self.input_height / self.output_height > 0.1:
+        if (self.input_width / self.output_width - self.input_height / self.output_height) > 0.1:
             print('[!] The ratio of size from input image to output image is quite different. Consider editing first')
 
         if SPACING_BETWEEN_CIRCLE_CENTERS < MAX_DIAMETER:
@@ -64,6 +64,7 @@ class RasterImage():
             x = 0
             self.sample_data.append(sample_row_data)
             y += pixels_per_sample_height
+        self.sample_data.reverse() # dxf has (+x,+y) in 1, while the image is sampled differently so this corrects it for dxf.
         print('Sampling Complete.')
 
     def sample_image_area(self, x_start, x_delta, y_start, y_delta):
@@ -85,15 +86,15 @@ class RasterImage():
         for row in self.sample_data:
             for cell in row:
                 self.dxf_drawing.add(dxf.circle(radius=self.luminance_to_inches(cell) / 2, center=(x, y)))
-                y += self.output_spacing
-            y = self.output_spacing / 2
-            x += self.output_spacing
+                x += self.output_spacing
+            x = self.output_spacing / 2
+            y += self.output_spacing
         print('Converting Complete.')
 
     def draw_borders(self):
-        min_x = 0  - self.output_spacing / 2
+        min_x = 0 - self.output_spacing / 2
         max_x = self.output_width + self.output_spacing / 2
-        min_y = 0  - self.output_spacing / 2
+        min_y = 0 - self.output_spacing / 2
         max_y = self.output_height + self.output_spacing / 2
 
         self.dxf_drawing.add(dxf.line(start=(min_x, min_y), end=(min_x, max_y)))
