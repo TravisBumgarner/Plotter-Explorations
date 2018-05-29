@@ -37,10 +37,10 @@ class RasterImage():
         if response != 'y' or 'Y':
             return
 
-    def luminance_to_inches(self, value):
-        mod_value = (255 - value) if BLACK_MEANS_SMALL_CIRCLES else value
-        inches = self.output_min_diameter + (float(mod_value) / float(255) * (self.output_max_diameter - self.output_min_diameter))
-        return inches
+    def luminance_to_circle_diameter(self, value):
+        mod_value = (255 - value) if WHITE_MEANS_SMALL_CIRCLES else value
+        diameter = self.output_min_diameter + (float(mod_value) / float(255) * (self.output_max_diameter - self.output_min_diameter))
+        return diameter
 
     def sample_image(self):
         print('Sampling Image...')
@@ -85,7 +85,7 @@ class RasterImage():
 
         for row in self.sample_data:
             for cell in row:
-                self.dxf_drawing.add(dxf.circle(radius=self.luminance_to_inches(cell) / 2, center=(x, y)))
+                self.dxf_drawing.add(dxf.circle(radius=self.luminance_to_circle_diameter(cell) / 2, center=(x, y)))
                 x += self.output_spacing
             x = self.output_spacing / 2
             y += self.output_spacing
