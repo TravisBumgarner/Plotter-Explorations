@@ -37,20 +37,21 @@ class RasterImage():
         if response != 'y' or 'Y':
             return
 
-    def luminance_to_circle_diameter(self, value):
+    def luminance_to_circle_radius(self, value):
         mod_value = (255 - value) if WHITE_MEANS_SMALL_CIRCLES else value
         diameter = self.output_min_diameter + (float(mod_value) / float(255) * (self.output_max_diameter - self.output_min_diameter))
-        return diameter
+        radius = diameter / 2
+        return radius
 
     def sample_image(self):
         print('Sampling Image...')
         self.sample_data = []
 
-        width_samples = self.output_width / self.output_spacing
-        height_samples = self.output_height / self.output_spacing
+        total_x_samples = self.output_width / self.output_spacing
+        total_y_samples = self.output_height / self.output_spacing
 
-        pixels_per_sample_width = int(round(self.input_width / width_samples))
-        pixels_per_sample_height = int(round(self.input_height / height_samples))
+        pixels_per_sample_width = int(round(self.input_width / total_x_samples))
+        pixels_per_sample_height = int(round(self.input_height / total_y_samples))
 
         x = 0
         y = 0
@@ -79,23 +80,23 @@ class RasterImage():
 
     def samples_to_dxf(self):
         print('Converting samples to dxf...')
-        # Start at the center of the first square
-        x = self.output_spacing / 2
-        y = self.output_spacing / 2
+        x_center = 0
+        y_center = 0
 
         for row in self.sample_data:
-            for cell in row:
-                self.dxf_drawing.add(dxf.circle(radius=self.luminance_to_circle_diameter(cell) / 2, center=(x, y)))
-                x += self.output_spacing
-            x = self.output_spacing / 2
-            y += self.output_spacing
+            for sample_luminance_value in row:
+                circle = dxf.circle(radius=self.luminance_to_circle_radius(sample_luminance_value))
+                self.dxf_drawing.add(circle, center=(x_center, y_center))
+                x_center += self.output_spacing
+            x_center = 0
+            y_center += self.output_spacing
         print('Converting Complete.')
 
     def draw_borders(self):
-        min_x = 0 - self.output_spacing / 2
-        max_x = self.output_width + self.output_spacing / 2
-        min_y = 0 - self.output_spacing / 2
-        max_y = self.output_height + self.output_spacing / 2
+        min_x = -self.output_spacing
+        max_x = self.output_width
+        min_y = -self.output_spacing
+        max_y = self.output_height
 
         self.dxf_drawing.add(dxf.line(start=(min_x, min_y), end=(min_x, max_y)))
         self.dxf_drawing.add(dxf.line(start=(min_x, min_y), end=(max_x, min_y)))
@@ -104,6 +105,7 @@ class RasterImage():
 
     def save_dxf(self):
         self.dxf_drawing.save()
+        print('Saving as {}'.format(DXF_FILE))
 
 
 if __name__ == '__main__':
