@@ -5,6 +5,8 @@
 - [ ] Finish Numbers & letters
 - [ ] Support new lines
 - [ ] Remove Tabs for output
+- [x] Cause printer to not start if illegal characters given
+- [ ] Add support for .!
 
 # Pipe Dreams todo
 
