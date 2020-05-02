@@ -61,14 +61,16 @@ def draw_character(character_to_draw, scale_factor, travel_height, draw_height, 
         output += draw_primative(scale_factor, travel_height, draw_height, x_start, y_start)
     return output
 
-def main(input_string):
-    sanitized_input = [char.lower() for char in input_string]
+def validate_input(sanitized_input):
     input_character_set = set(sanitized_input)
     valid_character_set = set(character_map.keys())
     if not input_character_set.issubset(valid_character_set):
         invalid_chararacters = input_character_set.difference(valid_character_set)
-        raise Exception(f"Invalid character(s) supplied: {(', ').join(invalid_chararacters)}")        
+        raise Exception(f"Invalid character(s) supplied: {(', ').join(invalid_chararacters)}") 
 
+def main(input_string):
+    sanitized_input = [char.lower() for char in input_string]    
+    validate_input(sanitized_input)
 
     scale_factor = 20
     travel_height = 4
