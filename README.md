@@ -1,3 +1,10 @@
+# Tutorials
+
+- [Part 1 Twitch Live Stream](https://www.youtube.com/watch?v=867jL2bwx9c)
+- [Part 2 Twitch Live Stream](https://www.youtube.com/watch?v=t-9eQTv8wtY)
+- [Part 3 Twitch Live Stream](https://www.youtube.com/watch?v=QzO6jngdEAM)
+
+
 # Setup
 
 1. Design & Print drawing instrument holder.
