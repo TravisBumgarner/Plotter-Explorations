@@ -1,61 +1,63 @@
-def line_a(scale_factor, travel_height, draw_height, x_start, y_start):
+from config import CONFIG
+
+def line_a(x_start, y_start):
     return f"""
         G0 X{x_start} Y{y_start}
-        G0 Z{draw_height}
-        G0 X{x_start + 0.5 * scale_factor} Y{y_start} 
-        G0 Z{travel_height}
+        G0 Z{CONFIG["DRAW_HEIGHT"]}
+        G0 X{x_start + CONFIG["CHARACTER_WIDTH"]} Y{y_start} 
+        G0 Z{CONFIG["TRAVEL_HEIGHT"]}
     """
 
 
-def line_b(scale_factor, travel_height, draw_height, x_start, y_start):
+def line_b(x_start, y_start):
     return f"""
         G0 X{x_start} Y{y_start}
-        G0 Z{draw_height}
-        G0 X{x_start} Y{y_start + 0.5 * scale_factor} 
-        G0 Z{travel_height}
+        G0 Z{CONFIG["DRAW_HEIGHT"]}
+        G0 X{x_start} Y{y_start + 0.5 * CONFIG["CHARACTER_HEIGHT"]} 
+        G0 Z{CONFIG["TRAVEL_HEIGHT"]}
     """
 
 
-def line_c(scale_factor, travel_height, draw_height, x_start, y_start):
+def line_c(x_start, y_start):
     return f"""
-        G0 X{x_start} Y{y_start + 0.5 * scale_factor} 
-        G0 Z{draw_height}
-        G0 X{x_start} Y{y_start + 1 * scale_factor} 
-        G0 Z{travel_height}
+        G0 X{x_start} Y{y_start + 0.5 * CONFIG["CHARACTER_HEIGHT"]} 
+        G0 Z{CONFIG["DRAW_HEIGHT"]}
+        G0 X{x_start} Y{y_start + CONFIG["CHARACTER_HEIGHT"]} 
+        G0 Z{CONFIG["TRAVEL_HEIGHT"]}
     """
 
 
-def line_d(scale_factor, travel_height, draw_height, x_start, y_start):
+def line_d(x_start, y_start):
     return f"""
-        G0 X{x_start} Y{y_start + 1 * scale_factor} 
-        G0 Z{draw_height}
-        G0 X{x_start + 0.5 * scale_factor} Y{y_start + 1 * scale_factor} 
-        G0 Z{travel_height}
+        G0 X{x_start} Y{y_start + CONFIG["CHARACTER_HEIGHT"]} 
+        G0 Z{CONFIG["DRAW_HEIGHT"]}
+        G0 X{x_start + CONFIG["CHARACTER_WIDTH"]} Y{y_start + CONFIG["CHARACTER_HEIGHT"]} 
+        G0 Z{CONFIG["TRAVEL_HEIGHT"]}
     """
 
 
-def line_e(scale_factor, travel_height, draw_height, x_start, y_start):
+def line_e(x_start, y_start):
     return f"""
-        G0 X{x_start + 0.5 * scale_factor} Y{y_start +  1 * scale_factor} 
-        G0 Z{draw_height}
-        G0 X{x_start + 0.5 * scale_factor} Y{y_start + 0.5 * scale_factor} 
-        G0 Z{travel_height}
+        G0 X{x_start + CONFIG["CHARACTER_WIDTH"]} Y{y_start + CONFIG["CHARACTER_HEIGHT"]} 
+        G0 Z{CONFIG["DRAW_HEIGHT"]}
+        G0 X{x_start + CONFIG["CHARACTER_WIDTH"]} Y{y_start + 0.5 * CONFIG["CHARACTER_HEIGHT"]} 
+        G0 Z{CONFIG["TRAVEL_HEIGHT"]}
     """
 
 
-def line_f(scale_factor, travel_height, draw_height, x_start, y_start):
+def line_f(x_start, y_start):
     return f"""
-        G0 X{x_start + 0.5 * scale_factor} Y{y_start + 0.5 * scale_factor} 
-        G0 Z{draw_height}
-        G0 X{x_start + 0.5 * scale_factor} Y{y_start}
-        G0 Z{travel_height}
+        G0 X{x_start + CONFIG["CHARACTER_WIDTH"]} Y{y_start + 0.5 *  CONFIG["CHARACTER_HEIGHT"]} 
+        G0 Z{CONFIG["DRAW_HEIGHT"]}
+        G0 X{x_start + CONFIG["CHARACTER_WIDTH"]} Y{y_start}
+        G0 Z{CONFIG["TRAVEL_HEIGHT"]}
     """
 
 
-def line_g(scale_factor, travel_height, draw_height, x_start, y_start):
+def line_g(x_start, y_start):
     return f"""
-        G0 X{x_start} Y{y_start + 0.5 * scale_factor} 
-        G0 Z{draw_height}
-        G0 X{x_start + 0.5 * scale_factor}  Y{y_start + 0.5 * scale_factor} 
-        G0 Z{travel_height}
+        G0 X{x_start} Y{y_start + 0.5 * CONFIG["CHARACTER_HEIGHT"]} 
+        G0 Z{CONFIG["DRAW_HEIGHT"]}
+        G0 X{x_start + CONFIG["CHARACTER_WIDTH"]}  Y{y_start + 0.5 * CONFIG["CHARACTER_HEIGHT"]} 
+        G0 Z{CONFIG["TRAVEL_HEIGHT"]}
     """

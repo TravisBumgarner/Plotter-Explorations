@@ -1,6 +1,8 @@
 from datetime import datetime
+import os
 
 from primatives import line_a, line_b, line_c, line_d, line_e, line_f, line_g
+from config import CONFIG
 
 character_map = {
     '1': 'bc',
@@ -13,15 +15,15 @@ character_map = {
     '8': 'abcdefg',
     '9': 'abcdfg',
     '0': 'abcdef',
-    'a': 'abcfeg',
+    'a': 'abgedc',
     'b': 'fegcd',
     'c': 'afed',
     'd': 'gedcb',
     'e': 'afged',
-    'f': 'afged',
+    'f': 'afge',
     'g': 'afedc',
     'h': 'fgec',
-    'i': 'fe',
+    'i': 'ea',
     'j': 'bcde',
     'k': 'afegc',
     'l': 'fed',
@@ -55,12 +57,12 @@ primative_map = {
 }
 
 
-def draw_character(character_to_draw, scale_factor, travel_height, draw_height, x_start, y_start):
+def draw_character(character_to_draw, x_start, y_start):
     output = f';{character_to_draw}'
     primatives = character_map[character_to_draw] 
     for primative in primatives: 
         draw_primative = primative_map[primative]
-        output += draw_primative(scale_factor, travel_height, draw_height, x_start, y_start)
+        output += draw_primative(x_start, y_start)
     return output
 
 def validate_input(sanitized_input):
@@ -74,27 +76,35 @@ def main(input_string):
     sanitized_input = [char.lower() for char in input_string]    
     validate_input(sanitized_input)
 
-    scale_factor = 20
-    travel_height = 4
-    draw_height = 2.4
-    x_start = 150
-    y_start = 20
-    x_spacing = scale_factor / 10
-    y_spacing = scale_factor / 10
+    x_start = CONFIG["X_MIN"]
+    y_start = CONFIG["Y_MIN"]
+    x_period = (CONFIG["X_SPACING"] + CONFIG["CHARACTER_WIDTH"])
+    y_period = (CONFIG["Y_SPACING"] + CONFIG["CHARACTER_HEIGHT"])
 
     output = ''
 
     output += 'G28\n'
-    output += f'G0 Z{travel_height + 20}\n' # Tick pen on!
+    output += f'G0 Z{CONFIG["TRAVEL_HEIGHT"] + 20}\n' # Tick pen on!
 
-    output += f'G0 Z{travel_height}\n'
+    output += f'G0 Z{CONFIG["TRAVEL_HEIGHT"]}\n'
     for character_to_draw in sanitized_input:
-        output += draw_character(character_to_draw, scale_factor, travel_height, draw_height, x_start, y_start)
+        if(x_start - x_period) < CONFIG["X_MAX"]:
+            x_start = CONFIG["X_MIN"]
+            y_start += y_period
+
+        if y_start > CONFIG["Y_MAX"]:
+            raise Exception('Exceeded printing bed')
+        
+        output += draw_character(character_to_draw, x_start, y_start)
         output += '\n'
-        x_start = x_start - (x_spacing + 0.5 * scale_factor)
+        x_start = x_start - x_period
     output += 'G28\n'
-    output += f'G0 Z{travel_height + 20}\n' # Tick pen off!
+    output += f'G0 Z{CONFIG["TRAVEL_HEIGHT"] + 20}\n' # Tick pen off!
     
-    with open(f'./gcode/output{datetime.now().strftime("%Y_%m_%d_%H_%M_%S")}.gcode', 'w') as f:
+    filename = f'{datetime.now().strftime("%Y_%m_%d_%H_%M_%S")}.gcode'
+    filepath = os.path.join(os.path.abspath(""), "output") 
+    if not os.path.exists(filepath):
+        os.makedirs(filepath)
+    with open(os.path.join(filepath, filename), 'w') as f:
         f.write(output)
-main('Hello World')
+main('abcdef012345_-')

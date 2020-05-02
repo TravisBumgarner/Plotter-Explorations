@@ -4,3 +4,4 @@ __pycahche__/
 *.gcode
 .tmp*
 desktop.ini
+config.py
