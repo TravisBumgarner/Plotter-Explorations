@@ -17,14 +17,14 @@
 - [x] Finish Numbers & letters
 - [x] Cause printer to not start if illegal characters given
 - [x] Design new pen holder to accept multiple sizes
-- [ ] Add support for .!
+- [ ] ~Add support for .!~
 - [ ] ~Remove Tabs for output~
 - [ ] ~Flip x values so x_max is a positive number and not 0~
-- [ ] Figure travel and draw height
-- [ ] test print a space 
-- [ ] Refactor
-    - [ ] Move config params to config.py
-    - [ ] Other cleanup?
+- [x] Figure travel and draw height
+- [x] test print a space 
+- [x] Refactor
+    - [x] Move config params to config.py
+    - [x] Other cleanup?
 
 # Pipe Dreams todo
 
