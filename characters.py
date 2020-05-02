@@ -25,3 +25,5 @@ def character_3(scale_factor, travel_height, draw_height, x_start, y_start):
     output += line_d(scale_factor, travel_height, draw_height, x_start, y_start)
     return output
 
+
+
