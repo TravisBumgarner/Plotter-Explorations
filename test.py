@@ -1,10 +1,4 @@
-from characters import *
-
-# character_map = {
-#     '1': character_1,
-#     '2': character_2,
-#     '3': character_3,
-# }
+from primatives import line_a, line_b, line_c, line_d, line_e, line_f, line_g
 
 character_map = {
     '1': 'bc',
@@ -13,16 +7,20 @@ character_map = {
 }
 
 primative_map = {
+    'a': line_a,
     'b': line_b,
-    'c': line_c
+    'c': line_c,
+    'd': line_d,
+    'e': line_e,
+    'f': line_f,
+    'g': line_g
 }
 
 
-#1
 def draw_character(character_to_draw, scale_factor, travel_height, draw_height, x_start, y_start):
-    output = ''
-    primatives = character_map[character_to_draw] # bc
-    for primative in primatives: # b
+    output = f';{character_to_draw}'
+    primatives = character_map[character_to_draw] 
+    for primative in primatives: 
         draw_primative = primative_map[primative]
         output += draw_primative(scale_factor, travel_height, draw_height, x_start, y_start)
     return output
@@ -44,4 +42,4 @@ def main(input_string):
         x_start = x_start - (x_spacing + 0.5 * scale_factor)
     print('G28')
     print(f'G0 Z{travel_height + 20}') # Tick pen off!
-main('1')
+main('123')
