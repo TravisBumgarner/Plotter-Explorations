@@ -2,11 +2,11 @@
 
 - [x] Refactor to not rely on `characters.py`
 - [ ] Write to file
-- [ ] Finish Numbers & letters
 - [ ] Support new lines
-- [ ] Remove Tabs for output
+- [ ] Finish Numbers & letters
 - [x] Cause printer to not start if illegal characters given
 - [ ] Add support for .!
+- [ ] ~Remove Tabs for output~
 
 # Pipe Dreams todo
 

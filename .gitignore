@@ -1,3 +1,6 @@
 __pycahche__/
 *.pyc
 .DS_Store
+*.gcode
+.tmp*
+desktop.ini

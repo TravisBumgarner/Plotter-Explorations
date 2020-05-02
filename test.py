@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from primatives import line_a, line_b, line_c, line_d, line_e, line_f, line_g
 
 character_map = {
@@ -80,12 +82,19 @@ def main(input_string):
     x_spacing = scale_factor / 10
     y_spacing = scale_factor / 10
 
-    print('G28')
-    print(f'G0 Z{travel_height + 20}') # Tick pen on!
-    print(f'G0 Z{travel_height}')
+    output = ''
+
+    output += 'G28\n'
+    output += f'G0 Z{travel_height + 20}\n' # Tick pen on!
+
+    output += f'G0 Z{travel_height}\n'
     for character_to_draw in sanitized_input:
-        print(draw_character(character_to_draw, scale_factor, travel_height, draw_height, x_start, y_start))
+        output += draw_character(character_to_draw, scale_factor, travel_height, draw_height, x_start, y_start)
+        output += '\n'
         x_start = x_start - (x_spacing + 0.5 * scale_factor)
-    print('G28')
-    print(f'G0 Z{travel_height + 20}') # Tick pen off!
+    output += 'G28\n'
+    output += f'G0 Z{travel_height + 20}\n' # Tick pen off!
+    
+    with open(f'./gcode/output{datetime.now().strftime("%Y_%m_%d_%H_%M_%S")}.gcode', 'w') as f:
+        f.write(output)
 main('Hello World')
