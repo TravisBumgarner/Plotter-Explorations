@@ -34,7 +34,7 @@ def wait_for_arduino():
         
 def main():
     wait_for_arduino()
-    send_to_arduino("20,30,40\n")
+    send_to_arduino("10000,30,40\n")
     
     # while arduino.in_waiting == 0:
     #     print('hello')
