@@ -14,7 +14,12 @@ def main():
     screen.fill(WHITE)
     pygame.display.set_caption("Python to Arduino")
 
-    last_position = None
+    start_top = 0
+    start_left = 0
+    current_top = 0
+    current_left = 0
+
+    completed_rectangles = []
 
     while True:
         for event in pygame.event.get():
@@ -23,18 +28,21 @@ def main():
                 sys.exit()
             elif event.type == MOUSEBUTTONDOWN:
                 is_drawing = True
+                start_left, start_top = pygame.mouse.get_pos()
+                current_left = start_left
+                current_top = start_top
             elif event.type == MOUSEBUTTONUP:
-                mouse_position = (0, 0)
                 is_drawing = False
-                last_position = None
+                completed_rectangles.append((start_left, start_top, current_left-start_left, current_top-start_top))
             elif event.type == MOUSEMOTION:
                 if (is_drawing):
-                    mouse_position = pygame.mouse.get_pos()
-                    if last_position is not None:
-                        pygame.draw.line(screen, BLACK, last_position, mouse_position, 1)
-                    last_position = mouse_position
-
+                    current_left, current_top = pygame.mouse.get_pos()
+        screen.fill(WHITE)
+        pygame.draw.rect(screen, BLACK, (start_left, start_top, current_left-start_left, current_top-start_top),3 )
+        for rectangle in completed_rectangles:
+            pygame.draw.rect(screen, BLACK, rectangle ,3 )
         pygame.display.update()
 
 if __name__ == "__main__":
     main()
+    print(completed_rectangles)
