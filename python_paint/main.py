@@ -18,7 +18,6 @@ def main():
     start_left = 0
     current_top = 0
     current_left = 0
-
     completed_rectangles = []
 
     while True:
@@ -37,12 +36,17 @@ def main():
             elif event.type == MOUSEMOTION:
                 if (is_drawing):
                     current_left, current_top = pygame.mouse.get_pos()
+            elif event.type == pygame.KEYDOWN:
+                if event.mod and pygame.K_LCTRL and event.key == pygame.K_z:
+                    if len(completed_rectangles) > 0:
+                        completed_rectangles.pop()
+
         screen.fill(WHITE)
-        pygame.draw.rect(screen, BLACK, (start_left, start_top, current_left-start_left, current_top-start_top),3 )
+        if is_drawing:
+            pygame.draw.rect(screen, BLACK, (start_left, start_top, current_left-start_left, current_top-start_top),3 )
         for rectangle in completed_rectangles:
             pygame.draw.rect(screen, BLACK, rectangle ,3 )
         pygame.display.update()
 
 if __name__ == "__main__":
     main()
-    print(completed_rectangles)
