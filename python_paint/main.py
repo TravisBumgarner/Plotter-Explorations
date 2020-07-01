@@ -2,6 +2,14 @@ import pygame, sys
 from pygame.locals import *
 from config import PLOTTER_WIDTH, PLOTTER_HEIGHT
 
+def output_gcode(completed_rectangles):
+    for left, top, width, height in completed_rectangles:
+        top_line = [(left, top), (left+width,top)]
+        bottom_line = [(left, top+height), (left+width,top+height)]
+        left_line = [(left, top), (left, top+height)]
+        right_line = [(left+width, top), (left+width, top+height)]
+        print(top_line, bottom_line, left_line, right_line)
+
 def main():
     pygame.init()
 
@@ -23,6 +31,7 @@ def main():
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
+                output_gcode(completed_rectangles)
                 pygame.quit()
                 sys.exit()
             elif event.type == MOUSEBUTTONDOWN:
