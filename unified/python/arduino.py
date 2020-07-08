@@ -1,9 +1,11 @@
 import serial
 import time
 
+from config import ARDUINO_PORT, ARDUINO_BAUD_RATE
+
 #1. (python) Send command <20, 30, 40> where the format is <X, Y, Z>
 
-arduino = serial.Serial(port="/dev/ttyS11", baudrate=9600)
+arduino = serial.Serial(port=ARDUINO_PORT, baudrate=ARDUINO_BAUD_RATE)
 print("Arduino Initialized")
 
 def send_to_arduino(message):
@@ -34,10 +36,6 @@ def wait_for_arduino():
 def main():
     wait_for_arduino()
     send_to_arduino("10000,30,40\n")
-    
-    # while arduino.in_waiting == 0:
-    #     print('hello')
-    #     pass
     
     message = receive_from_arduino()
     print ("Reply Received  " + message)
