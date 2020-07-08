@@ -15,6 +15,7 @@ def send_to_arduino(message):
 def receive_from_arduino():
     message = ""
     character_received = " "
+    print(character_received)
 
     while character_received != b"\n":
         character_received = arduino.read()

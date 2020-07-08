@@ -2,5 +2,5 @@
     "board": "arduino:avr:uno",
     "programmer": "AVRISP mkII",
     "port": "COM4",
-    "sketch": "unified\\arduino\\ArduinoChat.ino"
+    "sketch": "unified\\arduino\\arduino.ino"
 }

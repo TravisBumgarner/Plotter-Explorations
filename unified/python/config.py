@@ -4,8 +4,8 @@
 
 
 # Paint Program
-PLOTTER_WIDTH = 1800
-PLOTTER_HEIGHT = 1800
+PLOTTER_WIDTH = 400  # should be 1800 for me
+PLOTTER_HEIGHT = 400  # should be 1800 for me
 
 # Arduino
 ARDUINO_BAUD_RATE = 9600
