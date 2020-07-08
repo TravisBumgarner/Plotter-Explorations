@@ -1,4 +1,5 @@
 from paint import main as paint
+from paint_to_gcode import convert_rectangles
 
 """
 Steps:
@@ -9,8 +10,16 @@ Steps:
 5. Arduino prints what was painted
 """
 
+
 def main():
-    paint()
+    print_instructions = paint()
+
+    gcode_rectangles = convert_rectangles(print_instructions["rectangles"])
+    gcode = [*gcode_rectangles]
+
+    for instruction in gcode:
+        print(instruction)
+
 
 if __name__ == "__main__":
     main()
