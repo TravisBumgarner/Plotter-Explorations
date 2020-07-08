@@ -9,4 +9,4 @@ PLOTTER_HEIGHT = 1800
 
 # Arduino
 ARDUINO_BAUD_RATE = 9600
-ARDUINO_PORT = "COM11" # Run utilities/detect_ports.py to get this value.
+ARDUINO_PORT = "COM4"  # Run utilities/detect_ports.py to get this value.
