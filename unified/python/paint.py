@@ -2,6 +2,11 @@ import pygame, sys
 from pygame.locals import *
 from config import PLOTTER_WIDTH, PLOTTER_HEIGHT
 
+MENU_WIDTH = PLOTTER_WIDTH
+MENU_HEIGHT = 50
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+
 
 def output_rectanges(completed_rectangles):
     output = []
@@ -14,15 +19,114 @@ def output_rectanges(completed_rectangles):
     return {"rectangles": output}
 
 
+def draw_menu(screen):
+    menu_start_x = 0
+    menu_start_y = PLOTTER_HEIGHT
+    menu_width = PLOTTER_WIDTH
+
+    menu_item_width = 35
+    menu_item_height = 35
+
+    # Menu and Canvas Divider
+    pygame.draw.line(
+        screen,
+        BLACK,
+        (menu_start_x, menu_start_y),
+        (menu_start_x + menu_width, menu_start_y),
+        5,
+    )
+
+    # 1st Menu Item Background
+    pygame.draw.rect(
+        screen,
+        BLACK,
+        (
+            menu_start_x + menu_item_width,
+            menu_start_y + 10,
+            menu_item_width,
+            menu_item_height,
+        ),
+    )
+
+    # 1st Menu Item Icon
+    pygame.draw.rect(
+        screen,
+        WHITE,
+        (
+            menu_start_x + menu_item_width + 5,
+            menu_start_y + 10 + 5,
+            menu_item_width - 10,
+            menu_item_height - 10,
+        ),
+    )
+
+    # 2rd Menu Item Background
+    pygame.draw.rect(
+        screen,
+        BLACK,
+        (
+            menu_start_x + menu_item_width * 3,
+            menu_start_y + 10,
+            menu_item_width,
+            menu_item_height,
+        ),
+    )
+
+    # 2rd Menu Item Icon
+    pygame.draw.circle(
+        screen,
+        WHITE,
+        (
+            int(menu_start_x + menu_item_width * 3 + menu_item_width / 2),
+            int(menu_start_y + 10 + menu_item_height / 2),
+        ),
+        int(menu_item_width / 2 - 2),
+    )
+
+    # 3rd Menu Item Background
+    pygame.draw.rect(
+        screen,
+        BLACK,
+        (
+            menu_start_x + menu_item_width * 5,
+            menu_start_y + 10,
+            menu_item_width,
+            menu_item_height,
+        ),
+    )
+
+    # 3rd Menu Item Icon
+    pygame.draw.rect(
+        screen,
+        WHITE,
+        (
+            menu_start_x + menu_item_width * 5 + 3,
+            menu_start_y + 10 + 4,
+            menu_item_width - 5,
+            2,
+        ),
+    )
+    pygame.draw.rect(
+        screen,
+        WHITE,
+        (
+            int(menu_start_x + menu_item_width * 5 + menu_item_width / 2),
+            menu_start_y + 10 + 4,
+            2,
+            menu_item_height - 7,
+        ),
+    )
+
+
 def main():
     pygame.init()
 
-    WHITE = (255, 255, 255)
-    BLACK = (0, 0, 0)
-
     mouse_position = (0, 0)
     is_drawing = False
-    screen = pygame.display.set_mode((PLOTTER_WIDTH, PLOTTER_HEIGHT), 0, 32)
+    screen = pygame.display.set_mode(
+        (PLOTTER_WIDTH, PLOTTER_HEIGHT + MENU_HEIGHT), 0, 32
+    )
+
     screen.fill(WHITE)
     pygame.display.set_caption("Python to Arduino")
 
@@ -63,6 +167,9 @@ def main():
                         completed_rectangles.pop()
 
         screen.fill(WHITE)
+
+        draw_menu(screen)
+
         if is_drawing:
             pygame.draw.rect(
                 screen,
@@ -81,4 +188,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    print(main())
