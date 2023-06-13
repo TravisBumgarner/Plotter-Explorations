@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 
-from primatives import line_a, line_b, line_c, line_d, line_e, line_f, line_g
+from primatives import line_a, line_b, line_c, line_d, line_e, line_f, line_g, pen_off, pen_on
 from config import CONFIG
 
 character_map = {
@@ -72,6 +72,8 @@ def validate_input(sanitized_input):
         invalid_chararacters = input_character_set.difference(valid_character_set)
         raise Exception(f"Invalid character(s) supplied: {(', ').join(invalid_chararacters)}") 
 
+
+
 def main(input_string):
     sanitized_input = [char.lower() for char in input_string]    
     validate_input(sanitized_input)
@@ -83,10 +85,12 @@ def main(input_string):
 
     output = ''
 
-    output += 'G28\n'
-    output += f'G0 Z{CONFIG["TRAVEL_HEIGHT"] + 20}\n' # Tick pen on!
-
-    output += f'G0 Z{CONFIG["TRAVEL_HEIGHT"]}\n'
+    output += '        F10000\n' # Set Feed rate
+    output += '        G90\n' # Set unites absolute
+    output += '        G28\n' # Set units mm
+    output += pen_off()
+    output += '        G21\n' # Go Home
+    
     for character_to_draw in sanitized_input:
         if(x_start - x_period) < CONFIG["X_MAX"]:
             x_start = CONFIG["X_MIN"]
@@ -98,8 +102,8 @@ def main(input_string):
         output += draw_character(character_to_draw, x_start, y_start)
         output += '\n'
         x_start = x_start - x_period
+    output += pen_off()
     output += 'G28\n'
-    output += f'G0 Z{CONFIG["TRAVEL_HEIGHT"] + 20}\n' # Tick pen off!
     
     filename = f'{datetime.now().strftime("%Y_%m_%d_%H_%M_%S")}.gcode'
     filepath = os.path.join(os.path.abspath(""), "output") 
@@ -107,4 +111,4 @@ def main(input_string):
         os.makedirs(filepath)
     with open(os.path.join(filepath, filename), 'w') as f:
         f.write(output)
-main('abcdef012345_-')
+main('hi sam')

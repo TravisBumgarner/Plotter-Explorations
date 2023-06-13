@@ -2,12 +2,10 @@ CONFIG = {
     # These Next Four Params are four the print bed dimensions. Assumes printer origin is top right
     # And that to start writing, printer should move from top left to top right and then down.
     # Might need to tweek for different originns
-    "X_MIN": 160, # In mm 
-    "X_MAX": 0, # In mm 
-    "Y_MIN": 10, # In mm
-    "Y_MAX": 100, # In mm
-    "DRAW_HEIGHT": 4.8, # In mm Height that pen touches the surface
-    "TRAVEL_HEIGHT": 10, # In mm Height that pen moves above the surface
+    "X_MIN": 0, # In mm 
+    "X_MAX": 280, # In mm 
+    "Y_MIN": 0, # In mm
+    "Y_MAX": 200, # In mm
     "CHARACTER_WIDTH": 10, # In mm Width of a single character
     "CHARACTER_HEIGHT": 20, # In mm, Height of a single character
     "X_SPACING": 4, # In mm, Distance between characters horizontally
