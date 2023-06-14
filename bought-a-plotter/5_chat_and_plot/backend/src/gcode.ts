@@ -13,7 +13,7 @@ async function sendInstructionAndWaitForReply(instruction: string, port: SerialP
   });
 }
 
-export async function streamGcode(gcodeFilePath: string, path: string, baudRate: number): Promise<void> {
+export async function streamGcode(gcodeFilePath: string, path: string, baudRate: number) {
   // Open grbl serial port
   const port = new SerialPort({path, baudRate });
 
@@ -50,6 +50,5 @@ export async function streamGcode(gcodeFilePath: string, path: string, baudRate:
   // Close the serial port
   port.close();
 
-  console.log('All instructions sent and replies received.');
-  process.exit(0)
+  return 'All instructions sent and replies received.'
 }

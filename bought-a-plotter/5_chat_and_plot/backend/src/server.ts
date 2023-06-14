@@ -21,15 +21,16 @@ wss.on('connection', (ws: WebSocket) => {
     ws.on('pong', () => { extWs.isAlive = true })
 
     ws.on('message', async (msg: string) => {
+        console.log(msg)
         await streamGcode('./src/grbl.gcode', '/dev/cu.usbserial-10', 115200)
-        .catch((error) => {
-          console.error('An error occurred:', error);
-        });
-
-        wss.clients
-        .forEach(client => {
-            client.send(msg)
+        .then(() => {
+            wss.clients.forEach(client => client.send("success"))
         })
+        .catch((error) => {
+            wss.clients.forEach(client => client.send(`An error occurred: ${JSON.stringify(error)}`))
+        });
+        
+
     })
 
     ws.on('error', (err) => {

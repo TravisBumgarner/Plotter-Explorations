@@ -50,10 +50,13 @@ const user = makeFakeUser()
 
 const App = () => {
     const [hasConnected, setHasConnected] = React.useState<boolean>(false)
-    const [messages, setMessages] = React.useState<any>([])
+    const [messages, setMessages] = React.useState<{sender: string, message: string}[]>([])
     const [content, setContent] = React.useState('')
 
-    client.onmessage = (message) => setMessages([...messages, JSON.parse(message.data)])
+    client.onmessage = (message) => {
+        console.log(message.data)
+        setMessages([...messages, {sender: "PlotterGPT", message: message.data}])
+    }
     if (!hasConnected) {
         client.onopen = (message) => {
             setHasConnected(true)
@@ -62,8 +65,8 @@ const App = () => {
     }
 
 
-    const chatMessages = messages.map(({ content, sender }, index) => {
-        return <ChatMessage key={index}><strong>{sender}</strong>: {content}</ChatMessage>
+    const chatMessages = messages.map(({message, sender}, index) => {
+        return <ChatMessage key={index}><strong>{sender}</strong>: {message}</ChatMessage>
     })
 
     const submit = () => {
@@ -73,7 +76,9 @@ const App = () => {
             type: 'TRANSMIT_MESSAGE'
         })
         client.send(encodedMessage)
+        setMessages([...messages, {sender: "User", message: content}])
         setContent('')
+
     }
 
     return (
