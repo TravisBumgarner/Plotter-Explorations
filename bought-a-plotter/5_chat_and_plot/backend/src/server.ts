@@ -1,6 +1,7 @@
 import * as express from 'express'
 import * as http from 'http'
 import * as WebSocket from 'ws'
+import { streamGcode } from './gcode'
 
 const app = express()
 
@@ -19,8 +20,11 @@ wss.on('connection', (ws: WebSocket) => {
     extWs.isAlive = true
     ws.on('pong', () => { extWs.isAlive = true })
 
-    ws.on('message', (msg: string) => {
-        const action = JSON.parse(msg)
+    ws.on('message', async (msg: string) => {
+        await streamGcode('./src/grbl.gcode', '/dev/cu.usbserial-10', 115200)
+        .catch((error) => {
+          console.error('An error occurred:', error);
+        });
 
         wss.clients
         .forEach(client => {

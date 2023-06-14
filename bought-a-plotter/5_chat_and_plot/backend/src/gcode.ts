@@ -1,6 +1,6 @@
 import { SerialPort } from 'serialport';
 import { ReadlineParser } from '@serialport/parser-readline';
-import fs from 'fs';
+import * as fs from 'fs';
 
 async function sendInstructionAndWaitForReply(instruction: string, port: SerialPort): Promise<string> {
   return new Promise<string>((resolve) => {
@@ -13,7 +13,7 @@ async function sendInstructionAndWaitForReply(instruction: string, port: SerialP
   });
 }
 
-async function streamGcode(gcodeFilePath: string, path: string, baudRate: number): Promise<void> {
+export async function streamGcode(gcodeFilePath: string, path: string, baudRate: number): Promise<void> {
   // Open grbl serial port
   const port = new SerialPort({path, baudRate });
 
@@ -53,9 +53,3 @@ async function streamGcode(gcodeFilePath: string, path: string, baudRate: number
   console.log('All instructions sent and replies received.');
   process.exit(0)
 }
-
-// Usage example:
-streamGcode('grbl.gcode', '/dev/cu.usbserial-10', 115200)
-  .catch((error) => {
-    console.error('An error occurred:', error);
-  });
