@@ -78,8 +78,13 @@ const App = () => {
         client.send(encodedMessage)
         setMessages([...messages, {sender: "User", message: content}])
         setContent('')
-
     }
+
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+          submit();
+        }
+      };
 
     return (
         <AppWrapper>
@@ -89,11 +94,9 @@ const App = () => {
                     {chatMessages}
                 </ChatMessagesWrapper>
                 <ChatInputWrapper>
-                    <ChatInput value={content} onChange={(event) => setContent(event.target.value)} />
-                    <ChatInputSubmit onClick={submit}>Send</ChatInputSubmit>
+                    <ChatInput onKeyPress={handleKeyPress} value={content} onChange={(event) => setContent(event.target.value.toUpperCase())}/>
                 </ChatInputWrapper>
             </ChatClientWrapper>
-            )
         </AppWrapper>
     )
 }
