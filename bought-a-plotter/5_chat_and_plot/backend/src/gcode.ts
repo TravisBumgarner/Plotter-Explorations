@@ -13,18 +13,18 @@ async function sendInstructionAndWaitForReply(instruction: string, port: SerialP
   });
 }
 
-export async function streamGcode(gcodeFilePath: string, path: string, baudRate: number) {
+export async function streamGcode(instruction: string, path: string, baudRate: number) {
   // Open grbl serial port
-  const port = new SerialPort({path, baudRate });
+  const port = new SerialPort({ path, baudRate });
 
   // Open g-code file
-  const gcodeFileContent = fs.readFileSync(gcodeFilePath, 'utf-8');
-  const gcodeLines = gcodeFileContent.split('\n');
+  //   const gcodeFileContent = fs.readFileSync(gcodeFilePath, 'utf-8');
+  //   const gcodeLines = gcodeFileContent.split('\n');
 
   // Wake up grbl
   await new Promise<void>((resolve) => {
     port.write('\r\n\r\n');
-    resolve()
+    resolve();
   });
 
   // Wait for grbl to initialize
@@ -33,22 +33,16 @@ export async function streamGcode(gcodeFilePath: string, path: string, baudRate:
   // Flush startup text in serial input
   await new Promise<void>((resolve) => {
     port.flush();
-    resolve()
+    resolve();
   });
 
   console.log('Grbl initialized');
-
-  // Stream g-code to grbl
-  for (const line of gcodeLines) {
-    const instruction = line.trim(); // Strip all EOL characters for consistency
-    console.log(`Sending: ${instruction}`);
-
-    const reply = await sendInstructionAndWaitForReply(instruction, port);
-    console.log(`Received: ${reply}`);
-  }
+  console.log('instruction', instruction)
+  const reply = await sendInstructionAndWaitForReply(instruction.trim(), port);
+  console.log(`Received: ${reply}`);
 
   // Close the serial port
   port.close();
 
-  return 'All instructions sent and replies received.'
+  return 'All instructions sent and replies received.';
 }
