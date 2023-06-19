@@ -1,5 +1,11 @@
 {
   "devDependencies": {
     "@types/node": "^20.3.1"
+  },
+  "scripts": {
+    "start": "concurrently \"cd frontend && yarn start\" \"cd backend && yarn start\""
+  },
+  "dependencies": {
+    "concurrently": "^8.2.0"
   }
 }

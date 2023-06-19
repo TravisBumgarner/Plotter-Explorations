@@ -11,6 +11,7 @@ const AppWrapper = styled.div`
     justify-content: center;
     width: 100vw;
     height: 100vh;
+    flex-direction: column;
 `
 
 const ChatClientWrapper = styled.div`
@@ -42,6 +43,7 @@ const ChatMessagesWrapper = styled.div`
     width: 100%;
     flex-grow: 1;
     background-color: rgba(0,0,0,0.2);
+    overflow: scroll;
 `
 
 
@@ -70,6 +72,11 @@ const App = () => {
     })
 
     const submit = () => {
+        sendMessage(content)
+        setContent('')
+    }
+
+    const sendMessage = (content: string) => {
         const encodedMessage = JSON.stringify({
             content,
             sender: user,
@@ -77,8 +84,7 @@ const App = () => {
         })
         client.send(encodedMessage)
         setMessages([...messages, {sender: "User", message: content}])
-        setContent('')
-    }
+    } 
 
     const handleKeyPress = (event) => {
         if (event.key === 'Enter') {
@@ -97,9 +103,18 @@ const App = () => {
                     <ChatInput onKeyPress={handleKeyPress} value={content} onChange={(event) => setContent(event.target.value.toUpperCase())}/>
                 </ChatInputWrapper>
             </ChatClientWrapper>
+            <ButtonsWrapper>
+                <button onClick={() => sendMessage('M3 S0')}>Pen Up</button>
+                <button onClick={() => sendMessage('M3 S1000')}>Pen Down</button>
+            </ButtonsWrapper>
         </AppWrapper>
     )
 }
+
+const ButtonsWrapper = styled.div`
+    display: flex; 
+    flex-direction: row;
+`
 
 export default App
 export { client }

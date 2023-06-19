@@ -12,24 +12,10 @@ async function sendInstructionAndWaitForReply(instruction: string, port: SerialP
     port.write(instruction + '\n');
   });
 }
-
-export async function streamGcode(instruction: string, path: string, baudRate: number) {
-  // Open grbl serial port
-  const port = new SerialPort({ path, baudRate });
-
-  // Open g-code file
-  //   const gcodeFileContent = fs.readFileSync(gcodeFilePath, 'utf-8');
-  //   const gcodeLines = gcodeFileContent.split('\n');
-
-  // Wake up grbl
-  await new Promise<void>((resolve) => {
-    port.write('\r\n\r\n');
-    resolve();
-  });
-
-  // Wait for grbl to initialize
-  await new Promise<void>((resolve) => setTimeout(resolve, 2000));
-
+const PATH = '/dev/cu.usbserial-10'
+const BAUD_RATE = 115200
+const port = new SerialPort({ path: PATH, baudRate: BAUD_RATE });
+export async function streamGcode(instruction: string) {
   // Flush startup text in serial input
   await new Promise<void>((resolve) => {
     port.flush();
@@ -41,8 +27,6 @@ export async function streamGcode(instruction: string, path: string, baudRate: n
   const reply = await sendInstructionAndWaitForReply(instruction.trim(), port);
   console.log(`Received: ${reply}`);
 
-  // Close the serial port
-  port.close();
 
   return reply;
 }

@@ -30,7 +30,7 @@ wss.on('connection', (ws: WebSocket) => {
 
   ws.on('message', async (msg: string) => {
     const parsed: Message = JSON.parse(msg);
-    await streamGcode(parsed.content, '/dev/cu.usbserial-10', 115200)
+    await streamGcode(parsed.content)
       .then((reply) => {
         wss.clients.forEach((client) => client.send(reply));
       })
