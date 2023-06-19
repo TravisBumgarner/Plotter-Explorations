@@ -2,23 +2,14 @@ import * as express from 'express';
 import * as http from 'http';
 import * as WebSocket from 'ws';
 import { streamGcode } from './gcode';
+import {Message} from '../../shared/types'
 
 const app = express();
-
-//initialize a simple http server
 const server = http.createServer(app);
-
-//initialize the WebSocket server instance
 const wss = new WebSocket.Server({ server });
 
 interface ExtWebSocket extends WebSocket {
   isAlive: boolean;
-}
-
-interface Message {
-  content: string;
-  sender: string;
-  type: string;
 }
 
 wss.on('connection', (ws: WebSocket) => {
@@ -29,8 +20,8 @@ wss.on('connection', (ws: WebSocket) => {
   });
 
   ws.on('message', async (msg: string) => {
-    const parsed: Message = JSON.parse(msg);
-    await streamGcode(parsed.content)
+    const {body}: Message = JSON.parse(msg);
+    await streamGcode(body)
       .then((reply) => {
         wss.clients.forEach((client) => client.send(reply));
       })

@@ -2,7 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
-    entry: './src/index.tsx',
+    entry: './src/App.tsx',
     output: {
         path: path.resolve(__dirname, 'public'),
         filename: 'app.[contenthash].js'
@@ -25,7 +25,7 @@ module.exports = {
     },
     devServer: {
         contentBase: './public',
-        port: 3003,
+        port: 3001,
         historyApiFallback: true,
         publicPath: '/'
     },
