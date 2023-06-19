@@ -44,5 +44,5 @@ export async function streamGcode(instruction: string, path: string, baudRate: n
   // Close the serial port
   port.close();
 
-  return 'All instructions sent and replies received.';
+  return reply;
 }
