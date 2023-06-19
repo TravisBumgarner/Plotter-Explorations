@@ -49,6 +49,8 @@ const ChatMessagesWrapper = styled.div`
 
 const App = () => {
   const [hasConnected, setHasConnected] = React.useState<boolean>(false);
+  const [x, setX] = React.useState(0)
+  const [y, setY] = React.useState(0)
   const [messages, setMessages] = React.useState<{ sender: string; message: string, timestamp: string }[]>([]);
   const [chatInput, setChatInput] = React.useState('');
   const [fileContents, setFileContents] = React.useState<string[]>([]);
@@ -65,7 +67,7 @@ const App = () => {
     setMessages([...messages, { sender, message, timestamp: new Date().toLocaleTimeString() }]);
     scrollToBottom();
   }
-
+  console.log('global', x)
   React.useEffect(() => {
     const interval = setInterval(checkConnectionStatus, 1000);
 
@@ -110,50 +112,62 @@ const App = () => {
     sendMessage(['M3 S1000']);
   };
   const moveLeft = () => {
-    sendMessage(['G91', `G1 X-10 F${FEED_RATE}`, 'G90']);
+    const newX = x - 10
+    setX(newX)
+    sendMessage([`G1 X${newX} F${FEED_RATE}`]);
   };
   const moveRight = () => {
-    sendMessage(['G91', `G1 X10 F${FEED_RATE}`, 'G90', '']);
+    const newX = x + 10
+    setX(newX)
+    sendMessage([`G1 X${newX} F${FEED_RATE}`]);
   };
   const moveUp = () => {
-    sendMessage(['G91', `G1 Y10 F${FEED_RATE}`, 'G90']);
+    const newY = y + 10
+    setY(newY)
+    sendMessage([`G1 Y${newY} F${FEED_RATE}`]);
   };
   const moveDown = () => {
-    sendMessage(['G91', `G1 Y-10 F${FEED_RATE}`, 'G90']);
+    const newY = y - 10
+    setY(newY)
+    sendMessage([`G1 Y${newY} F${FEED_RATE}`]);
   };
   const moveHome = () => {
+    setX(0)
+    setY(0)
     sendMessage(['G28']);
-  };
+  };``
   const setHome = () => {
+    setX(0)
+    setY(0)
     sendMessage(['G10 P0 L20 X0 Y0 Z0']);
   };
 
-  const handleArrowKeyPress = (event) => {
-    if (chatInputRef.current === document.activeElement) {
-      // Don't fire when chat box has focus
-      return;
-    }
+  // const handleArrowKeyPress = (event) => {
+  //   if (chatInputRef.current === document.activeElement) {
+  //     // Don't fire when chat box has focus
+  //     return;
+  //   }
 
-    switch (event.key) {
-      case 'Enter':
-        submit();
-        break;
-      case 'ArrowLeft':
-        moveLeft();
-        break;
-      case 'ArrowRight':
-        moveRight();
-        break;
-      case 'ArrowUp':
-        moveUp();
-        break;
-      case 'ArrowDown':
-        moveDown();
-        break;
-      default:
-        break;
-    }
-  };
+  //   switch (event.key) {
+  //     case 'Enter':
+  //       submit();
+  //       break;
+  //     case 'ArrowLeft':
+  //       moveLeft();
+  //       break;
+  //     case 'ArrowRight':
+  //       moveRight();
+  //       break;
+  //     case 'ArrowUp':
+  //       moveUp();
+  //       break;
+  //     case 'ArrowDown':
+  //       moveDown();
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // };
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -161,13 +175,13 @@ const App = () => {
     }
   };
 
-  React.useEffect(() => {
-    document.addEventListener('keydown', handleArrowKeyPress, true);
+  // React.useEffect(() => {
+  //   window.addEventListener('keydown', handleArrowKeyPress, true);
 
-    return () => {
-      document.removeEventListener('keypress', handleArrowKeyPress);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener('keypress', handleArrowKeyPress);
+  //   };
+  // }, []);
 
   client.onmessage = (message) => {
     addMessage({ sender: 'PlotterGPT', message: message.data })
@@ -180,8 +194,7 @@ const App = () => {
     };
     return <p>Loading</p>;
   }
-
-  console.log(messages);
+  console.log('messages', messages)
   const chatMessages = messages.map(({ message, sender, timestamp }, index) => {
     return (
       <ChatMessage key={index}>
@@ -252,6 +265,7 @@ const App = () => {
       </ButtonsButtonsWrapper>
       <ul>
         <li>Feed Rate F{FEED_RATE}</li>
+        <li>X{x} Y{y}</li>
       </ul>
     </AppWrapper>
   );

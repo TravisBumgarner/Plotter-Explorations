@@ -7,8 +7,7 @@ async function sendInstructionAndWaitForReply(instruction: string, port: SerialP
     const parser = port.pipe(new ReadlineParser({ delimiter: '\r\n' }));
     parser.once('data', (line) => {
       const grbl_out = line.trim();
-      resolve(grbl_out);
-      parser.destroy()
+      resolve(grbl_out);``
     });
     port.write(instruction + '\n');
   });
