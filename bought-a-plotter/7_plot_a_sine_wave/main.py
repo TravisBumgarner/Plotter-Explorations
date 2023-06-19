@@ -27,14 +27,14 @@ def generate_gcode_sine_wave(x_offset, y_offset, amplitude, wavelength, feed_rat
     return gcode
 
 # Example usage
-x_offset = 10.0
-y_offset = 20.0
-amplitude = 5.0
-wavelength = 100.0
-feed_rate = 100.0
-resolution = 1.0
-max_x = 150.0
-max_y = 100.0
+x_offset = 0.0
+y_offset = -50.0
+amplitude = 20.0
+wavelength = 100
+feed_rate = 40000.0
+resolution = 0.1
+max_x = 280.0
+max_y = 200.0
 
 gcode = generate_gcode_sine_wave(x_offset, y_offset, amplitude, wavelength, feed_rate, resolution, max_x, max_y)
 

@@ -47,6 +47,23 @@ const App = () => {
   const [hasConnected, setHasConnected] = React.useState<boolean>(false);
   const [messages, setMessages] = React.useState<{ sender: string; message: string }[]>([]);
   const [content, setContent] = React.useState('');
+  const [fileContents, setFileContents] = React.useState<string | null>(null)
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const contents = e.target.result;
+        console.log(contents); // Display the loaded contents (G-code) in the console
+        setFileContents(contents as string)
+      };
+
+      reader.readAsText(file);
+    }
+  };
 
   const sendMessage = (content: string) => {
     const encodedMessage = JSON.stringify({
@@ -59,20 +76,28 @@ const App = () => {
   };
 
   const moveLeft = () => {
-    sendMessage('G91\r\nG0 X-10\r\nG90');
+    sendMessage('G91\r\nG0 X-10\r\nG90\r\n');
   };
 
   const moveRight = () => {
-    sendMessage('G91\r\nG0 X10\r\nG90');
+    sendMessage('G91\r\nG0 X10\r\nG90\r\n');
   };
 
   const moveUp = () => {
-    sendMessage('G91\r\nG0 Y10\r\nG90');
+    sendMessage('G91\r\nG0 Y10\r\nG90\r\n');
   };
 
   const moveDown = () => {
-    sendMessage('G91\r\nG0 Y-10\r\nG90');
+    sendMessage('G91\r\nG0 Y-10\r\nG90\r\n');
   };
+
+  const moveHome = () => {
+    sendMessage('G28\r\n');
+  }
+
+  const setHome = () => {
+    sendMessage('G10 P0 L20 X0 Y0 Z0\r\n');
+  }
 
   const handleArrowKeyPress = (event) => {
     console.log('RUDA', event)
@@ -98,14 +123,11 @@ const App = () => {
 }
 
   React.useEffect(() => {
-    console.log('hi')
-    // Attach event listeners for arrow key presses
     document.addEventListener('keydown', handleArrowKeyPress, true);
 
-    // Clean up the event listeners when the component is unmounted
-    // return () => {
-    //   document.removeEventListener('keypress', handleArrowKeyPress);
-    // };
+    return () => {
+      document.removeEventListener('keypress', handleArrowKeyPress);
+    };
   }, []);
 
   client.onmessage = (message) => {
@@ -155,15 +177,19 @@ const App = () => {
         </ChatInputWrapper>
       </ChatClientWrapper>
       <ButtonsWrapper>
-        <button onClick={() => sendMessage('G28')}>Go Home</button>
-        <button onClick={() => sendMessage('M3 S0')}>Pen Up</button>
-        <button onClick={() => sendMessage('M3 S1000')}>Pen Down</button>
-        <button onClick={() => sendMessage('$2=3')}>Invert X and Y</button>
-        <button onClick={() => sendMessage('G92 X0 Y0')}>Set Home</button>
-        <button onClick={() => sendMessage('G91\r\nG0 X-10\r\nG90')}>Move Left</button>
-        <button onClick={() => sendMessage('G91\r\nG0 X10\r\nG90')}>Move Right</button>
-        <button onClick={() => sendMessage('G91\r\nG0 Y10\r\nG90')}>Move Up</button>
-        <button onClick={() => sendMessage('G91\r\nG0 Y-10\r\nG90')}>Move Down</button>
+        <button onClick={moveHome}>Go Home</button>
+        <button onClick={() => sendMessage('M3 S0\r\n')}>Pen Up</button>
+        <button onClick={() => sendMessage('M3 S1000\r\n')}>Pen Down</button>
+        <button onClick={() => sendMessage('$2=3\r\n')}>Invert X and Y</button>
+        <button onClick={setHome}>Set Home</button>
+        <button onClick={moveLeft}>Move Left</button>
+        <button onClick={moveRight}>Move Right</button>
+        <button onClick={moveUp}>Move Up</button>
+        <button onClick={moveDown}>Move Down</button>
+      </ButtonsWrapper>
+      <ButtonsWrapper>
+        <input type="file" accept=".gcode" onChange={handleFileChange} />
+        <button disabled={fileContents === null} onClick={() => {sendMessage(fileContents); setFileContents(null)}}>Ship it.</button>
       </ButtonsWrapper>
     </AppWrapper>
   );

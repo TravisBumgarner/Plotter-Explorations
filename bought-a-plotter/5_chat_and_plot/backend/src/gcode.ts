@@ -8,6 +8,7 @@ async function sendInstructionAndWaitForReply(instruction: string, port: SerialP
     parser.once('data', (line) => {
       const grbl_out = line.trim();
       resolve(grbl_out);
+      parser.destroy()
     });
     port.write(instruction + '\n');
   });
@@ -15,18 +16,21 @@ async function sendInstructionAndWaitForReply(instruction: string, port: SerialP
 const PATH = '/dev/cu.usbserial-10'
 const BAUD_RATE = 115200
 const port = new SerialPort({ path: PATH, baudRate: BAUD_RATE });
-export async function streamGcode(instruction: string) {
+export async function streamGcode(instructions: string) {
+  console.log(instructions)
   // Flush startup text in serial input
   await new Promise<void>((resolve) => {
     port.flush();
     resolve();
   });
+  const instructionsArray = instructions.split('\r\n')
 
-  console.log('Grbl initialized');
-  console.log('instruction', instruction)
-  const reply = await sendInstructionAndWaitForReply(instruction.trim(), port);
-  console.log(`Received: ${reply}`);
+  let replies = ''
+  for await (const instruction of instructionsArray) {
+    const reply = await sendInstructionAndWaitForReply(instruction.trim(), port);
+    replies += reply
+}
 
-
-  return reply;
+  
+  return replies;
 }
