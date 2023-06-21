@@ -33,6 +33,8 @@ y_offset = -30.0
 amplitude = 20.0
 
 instructions = Instructions()
+instructions.add_plotting_outline()
+
 for i in range(0,14):
     instructions.bulk_add(sine_wave(y_offset - (i * 10), i))
     

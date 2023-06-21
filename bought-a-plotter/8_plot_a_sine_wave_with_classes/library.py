@@ -74,6 +74,16 @@ class Instructions:
 
         self.teardown.append(SpecialInstruction.PROGRAM_END.value)
 
+    def add_plotting_outline(self, number_of_outlines=3):
+        self.add_comment('Plotting area outline')
+        for _ in range(number_of_outlines):
+            self.add_special(SpecialInstruction.PEN_UP)
+            self.add_point(self.x_min, self.y_min)
+            self.add_point(self.x_max, self.y_min)
+            self.add_point(self.x_max, self.y_max)
+            self.add_point(self.x_min, self.y_max)
+            self.add_point(self.x_min, self.y_min)
+
     def add_first_point(self, point: Point):
         self.instructions.append(SpecialInstruction.PEN_UP.value)
         self.instructions.append(SpecialInstruction.PAUSE.value)
