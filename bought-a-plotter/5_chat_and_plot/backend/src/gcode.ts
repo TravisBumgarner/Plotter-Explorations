@@ -18,7 +18,6 @@ const port = new SerialPort({ path: PATH, baudRate: BAUD_RATE });
 
 export async function streamGcode(instructions: string[]) {
   console.log(instructions)
-  // Flush startup text in serial input
   await new Promise<void>((resolve) => {
     port.flush();
     resolve();
