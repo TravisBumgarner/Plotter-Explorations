@@ -2,3 +2,5 @@ node_modules/
 yarn.log
 dist/
 *.png
+__pycache__
+*.pyc

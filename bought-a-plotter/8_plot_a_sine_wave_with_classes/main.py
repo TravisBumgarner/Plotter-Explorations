@@ -13,6 +13,7 @@ from library import Instructions
 
 def sine_wave(y_offset, amplitude):
     instructions = Instructions()
+    instructions.add_comment(f'Sine Wave with values y_offset = {str(y_offset)} and amplitude = {str(amplitude)}')
 
     wavelength = 50
 
