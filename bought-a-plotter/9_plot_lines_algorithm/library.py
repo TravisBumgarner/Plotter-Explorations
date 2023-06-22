@@ -90,6 +90,7 @@ class Instructions:
         self.add_special(SpecialInstruction.PAUSE)
         self.add_point(x, y)
         self.add_special(SpecialInstruction.PEN_DOWN)
+        self.add_special(SpecialInstruction.PAUSE)
 
     def add_line(self, x1, y1, x2, y2):
         self.add_first_point(x1, y1)
