@@ -23,7 +23,7 @@ class Point:
 
 class SpecialInstruction(Enum):
     PEN_UP = "M3 S0"
-    PAUSE = "P0.25" # Might need to refine this number
+    PAUSE = "G04 P0.25" # Might need to refine this number
     PEN_DOWN = "M3 S1000"
     PROGRAM_END = "M2"
 
@@ -55,7 +55,7 @@ def preview_gcode(filename: str, output_image: str):
            
 
 class Instructions:
-    def __init__(self, units = 'mm', feed_rate = 10000.0, x_min = 0, x_max = 280.0, y_min = -200, y_max = 0):
+    def __init__(self, units = 'mm', feed_rate = 10000.0, x_min = 0, x_max = 225.0, y_min = -160, y_max = 0):
         self.feed_rate = feed_rate
         self.x_min = x_min
         self.x_max = x_max
@@ -64,6 +64,7 @@ class Instructions:
         self.setup = []
         self.instructions = []
         self.teardown = []
+        self.has_plotted_first_point = False
 
         if units == 'mm':
             self.setup.append('G21')
@@ -77,32 +78,39 @@ class Instructions:
     def add_plotting_outline(self, number_of_outlines=3):
         self.add_comment('Plotting area outline')
         for _ in range(number_of_outlines):
-            self.add_special(SpecialInstruction.PEN_UP)
-            self.add_point(self.x_min, self.y_min)
-            self.add_point(self.x_max, self.y_min)
-            self.add_point(self.x_max, self.y_max)
-            self.add_point(self.x_min, self.y_max)
-            self.add_point(self.x_min, self.y_min)
+            self.add_special(SpecialInstruction.PEN_UP, 'setup')
+            self.add_point(self.x_min, self.y_min, 'setup')
+            self.add_point(self.x_max, self.y_min, 'setup')
+            self.add_point(self.x_max, self.y_max, 'setup')
+            self.add_point(self.x_min, self.y_max, 'setup')
+            self.add_point(self.x_min, self.y_min, 'setup')
 
-    def add_first_point(self, point: Point):
-        self.instructions.append(SpecialInstruction.PEN_UP.value)
-        self.instructions.append(SpecialInstruction.PAUSE.value)
-        self.instructions.append(point)
-        self.instructions.append(SpecialInstruction.PEN_DOWN.value)
+    def add_first_point(self, x, y):
+        self.add_special(SpecialInstruction.PEN_UP)
+        self.add_special(SpecialInstruction.PAUSE)
+        self.add_point(x, y)
+        self.add_special(SpecialInstruction.PEN_DOWN)
 
-    def add_point(self, x, y):
+    def add_point(self, x, y, type="instructions"):
         point = Point(self.feed_rate, x, y)
         
         if not self.is_point_valid(point):
             raise ValueError("Failed to add point, outside dimensions of plotter", point.x, point.y)
         
-        if len(self.instructions) == 0:
-            self.add_first_point(point)
-
-        self.instructions.append(point)
+        if type == "instructions":
+            self.instructions.append(point)
+        elif type == "setup":
+            self.setup.append(point)
+        elif type == "teardown":
+            self.teardown.append(point)
         
-    def add_special(self, special_instruction: SpecialInstruction):
-        self.instructions.append(special_instruction.value)
+    def add_special(self, special_instruction: SpecialInstruction, type="instructions"):
+        if type == "instructions":
+            self.instructions.append(special_instruction.value)
+        elif type == "setup":
+            self.setup.append(special_instruction.value)
+        elif type == "teardown":
+            self.teardown.append(special_instruction.value)
             
     def is_point_valid(self, point: Point):
         if point.x > self.x_max or point.y > self.y_max or point.x < self.x_min or point.y < self.y_min:
