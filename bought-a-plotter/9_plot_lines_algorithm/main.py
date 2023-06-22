@@ -48,21 +48,15 @@ def main():
         instructionSets[int(value)].add_comment(f'row {y}')
 
         for x, pixel in enumerate(row):
-            print(x,y)
+            print('looping', x,y, pixel, value)
             if pixel == value:
                 continue
             
-            if x == 0:
-                end = [x,y]
-            else:
-                end = [x-1,y]
-            print(value, int(value))
-            print(f'value {value} start {start} end {end}')
+            end = [x,y]
             instructionSets[int(value)].add_line(OFFSET_X + start[0] * SCALE, OFFSET_Y + -1 * start[1] * SCALE, OFFSET_X + end[0] * SCALE, OFFSET_Y + -1 * end[1] * SCALE)
             start=[x,y]
             value = pixel
         end = [x,y]
-        print(f'value {value} start {start} end {end}')
         instructionSets[int(value)].add_line(OFFSET_X + start[0] * SCALE, OFFSET_Y + -1 * start[1] * SCALE, OFFSET_X + end[0] * SCALE, OFFSET_Y + -1 * end[1] * SCALE)
 
     for i in range(BUCKETS):
