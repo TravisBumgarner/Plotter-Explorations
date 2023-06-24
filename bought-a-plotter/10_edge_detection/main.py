@@ -17,7 +17,7 @@ def find_edges(img):
     [width,height] = img.shape
 
     # Create a place where edges will be populated.
-    edges = np.array([[0 for i in range(0,width)] for j in range(0,height)])
+    edges = np.array([["0" for i in range(0,width)] for j in range(0,height)])
 
     for y_pos, row in enumerate(img):
         for x_pos, pixel in enumerate(row):
@@ -29,22 +29,38 @@ def find_edges(img):
                 continue
             # this could probably be optimized. Like, maybe if the intersection is at (0,1) and (0,2) the output could be (0, 1.5). 
             # However, then that'd make my idea for the next step of finding the edges a bit more difficult. 
-            # For now, we'll just grab whichever position is value of 1 and save that in our edges aray.
+            # For now, we'll just grab whichever position is value of 1 and save that in our edges array.
             
             if pixel == 1:
                 edges[y_pos, x_pos] = 1
             else:
                 edges[y_pos, x_pos + 1] = 1
+
+    # Copying the code above, and transposing edges and image. Because I'm lazy.
+
+    edges = np.transpose(edges)
+
+    for y_pos, row in enumerate(np.transpose(img)):
+        for x_pos, pixel in enumerate(row):
+            if x_pos + 1 == len(row):
+                # we're always making a comparison between two pixels and there's comparisons to make at the end of a row
+                continue
+            if pixel == row[x_pos + 1]:
+                # we only care when there's a change from 0 -> 1 or 1 -> 0
+                continue
+            # this could probably be optimized. Like, maybe if the intersection is at (0,1) and (0,2) the output could be (0, 1.5). 
+            # However, then that'd make my idea for the next step of finding the edges a bit more difficult. 
+            # For now, we'll just grab whichever position is value of 1 and save that in our edges array.
+            
+            if pixel == 1:
+                edges[y_pos, x_pos] = 1
+            else:
+                edges[y_pos, x_pos + 1] = 1
+
+    return np.transpose(edges)
+
     
-    return edges
 
-
-
-
-
-
-
-    return edges
 
 
 def main():
