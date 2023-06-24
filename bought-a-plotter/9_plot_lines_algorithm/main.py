@@ -5,12 +5,36 @@ from imutils import resize
 
 SCALE = 3
 
+# I could probably not have me hit the bounds of the plotter with some better math.
+# Oh well. For now, this mess.
+magic_number = 10
 hmmm = Instructions()
-IMG_RESIZE_X = int(hmmm.x_max / SCALE)
-IMG_RESIZE_Y = int(abs(hmmm.y_max / SCALE))
+IMG_RESIZE_X = int(hmmm.x_max / SCALE) - magic_number
+IMG_RESIZE_Y = int(abs(hmmm.y_max / SCALE)) - magic_number
 
-def convert_image_to_n_grayscale_colors(img, n):
-    img = cv2.imread('test5.png')
+# Still need to do something with this function
+def most_interesting_colors(img, n_colors):
+    pixels = np.float32(img.reshape(-1, 3))
+
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 200, .1)
+    flags = cv2.KMEANS_RANDOM_CENTERS
+
+    _, labels, palette = cv2.kmeans(pixels, n_colors, None, criteria, 10, flags)
+    _, counts = np.unique(labels, return_counts=True)
+
+    for [b,g,r] in palette:
+        r = hex(int(r)).replace("0x", "").rjust(2, '0')
+        b = hex(int(b)).replace("0x", "").rjust(2, '0')
+        g = hex(int(g)).replace("0x", "").rjust(2, '0')
+
+        print(f'#{r}{g}{b}')
+
+    # return np.uint8(palette[-1])
+
+
+def convert_image_to_n_grayscale_colors(filename, n):
+    img = cv2.imread(filename)
+    most_interesting_colors(img, n)
     img = resize(img, width=IMG_RESIZE_X, height=IMG_RESIZE_Y)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     bucket_segments = 255 / (n - 1)
@@ -34,12 +58,13 @@ labels = {
     3: 'orange',
 }
 
+
 def main():
+    filename="test7.png"
     instructionSets = [Instructions() for _ in range(BUCKETS)]
     instructionSets[0].add_plotting_outline(2)
     # Works with color PNGs exported from lightroom
-    grayscale_buckets = convert_image_to_n_grayscale_colors('test5.png',  BUCKETS)
-    print(grayscale_buckets)
+    grayscale_buckets = convert_image_to_n_grayscale_colors(filename,  BUCKETS)
 
     for y, row in enumerate(grayscale_buckets):
         start = [0,y]
@@ -48,7 +73,6 @@ def main():
         instructionSets[int(value)].add_comment(f'row {y}')
 
         for x, pixel in enumerate(row):
-            print('looping', x,y, pixel, value)
             if pixel == value:
                 continue
             
@@ -60,5 +84,5 @@ def main():
         instructionSets[int(value)].add_line(OFFSET_X + start[0] * SCALE, OFFSET_Y + -1 * start[1] * SCALE, OFFSET_X + end[0] * SCALE, OFFSET_Y + -1 * end[1] * SCALE)
 
     for i in range(BUCKETS):
-        instructionSets[i].print_to_file(f'output_{i}_{labels[i]}.gcode')
+        instructionSets[i].print_to_file(f'output_{filename}_{i}_{labels[i]}.gcode')
 main()

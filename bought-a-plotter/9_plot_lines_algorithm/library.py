@@ -79,11 +79,11 @@ class Instructions:
         self.add_comment('Plotting area outline')
         for _ in range(number_of_outlines):
             self.add_special(SpecialInstruction.PEN_UP, 'setup')
-            self.add_point(self.x_min, self.y_min, 'setup')
             self.add_point(self.x_max, self.y_min, 'setup')
             self.add_point(self.x_max, self.y_max, 'setup')
             self.add_point(self.x_min, self.y_max, 'setup')
             self.add_point(self.x_min, self.y_min, 'setup')
+            self.add_point(self.x_max, self.y_min, 'setup')
 
     def add_first_point(self, x, y):
         self.add_special(SpecialInstruction.PEN_UP)
