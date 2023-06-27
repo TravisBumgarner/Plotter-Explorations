@@ -66,23 +66,5 @@ def main():
     # Works with color PNGs exported from lightroom
     grayscale_buckets = convert_image_to_n_grayscale_colors(filename,  BUCKETS)
 
-    for y, row in enumerate(grayscale_buckets):
-        start = [0,y]
-        end = None
-        value = grayscale_buckets[0][y]
-        instructionSets[int(value)].add_comment(f'row {y}')
-
-        for x, pixel in enumerate(row):
-            if pixel == value:
-                continue
-            
-            end = [x,y]
-            instructionSets[int(value)].add_line(OFFSET_X + start[0] * SCALE, OFFSET_Y + -1 * start[1] * SCALE, OFFSET_X + end[0] * SCALE, OFFSET_Y + -1 * end[1] * SCALE)
-            start=[x,y]
-            value = pixel
-        end = [x,y]
-        instructionSets[int(value)].add_line(OFFSET_X + start[0] * SCALE, OFFSET_Y + -1 * start[1] * SCALE, OFFSET_X + end[0] * SCALE, OFFSET_Y + -1 * end[1] * SCALE)
-
-    for i in range(BUCKETS):
-        instructionSets[i].print_to_file(f'output_{filename}_{i}_{labels[i]}.gcode')
+   
 main()
