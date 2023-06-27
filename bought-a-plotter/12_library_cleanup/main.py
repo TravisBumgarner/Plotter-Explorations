@@ -161,8 +161,8 @@ def main(filename, output_colors, x_offset, y_offset):
     horizontal_lines_algorithm(filename=filename, processed_image=processed_image, plotter=plotter, output_colors=output_colors, x_offset=x_offset, y_offset=y_offset)
 
 main(
-    filename='otter2.png',
-    output_colors=[ 'grey', 'pink', 'purple', 'blue'],
+    filename='me3.png',
+    output_colors=[ 'orange', 'green', 'blue', 'pink'],
     x_offset=0,
     y_offset=0,
 )

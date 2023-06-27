@@ -52,7 +52,9 @@ class Plotter:
             [rotated_height, rotated_width] = image.shape
             print(f'\t - Rotated size: {rotated_height}h by {rotated_width}w')
 
-        image = resize(image, width=abs(self.x_max), height=abs(self.y_max))
+
+        # image = resize(image, width=abs(self.x_max), height=abs(self.y_min))
+        image = resize(image, height=abs(self.y_min))
         [resized_height, resized_width] = image.shape
         print(f'\t - Resized size: {resized_height}h by {resized_width}w')
 
@@ -85,15 +87,30 @@ class Instructions:
         self.teardown_instructions.append(SpecialInstruction.PROGRAM_END.value)
 
     def outline_print(self, number_of_outlines=3):
-        # Todo - Should only execute once it knows how big the plotting area is
+        # Find outline of all points in plotting_instructions
+        image_x_min = self.plotter.x_max
+        image_x_max = self.plotter.x_min
+        image_y_min = self.plotter.y_max
+        image_y_max = self.plotter.y_min
+
+        for point in self.plotting_instructions:
+            if point.x < image_x_min:
+                image_x_min = point.x
+            if point.x > image_x_max:
+                image_x_max = point.x
+            if point.y < image_y_min:
+                image_y_min = point.y
+            if point.y > image_y_max:
+                image_y_max = point.y
+
         self.add_comment('Plotting area outline')
         for _ in range(number_of_outlines):
             self.add_special(SpecialInstruction.PEN_UP, 'setup')
-            self.add_point(self.plotter.x_max, self.plotter.y_min, 'setup')
-            self.add_point(self.plotter.x_max, self.plotter.y_max, 'setup')
-            self.add_point(self.plotter.x_min, self.plotter.y_max, 'setup')
-            self.add_point(self.plotter.x_min, self.plotter.y_min, 'setup')
-            self.add_point(self.plotter.x_max, self.plotter.y_min, 'setup')
+            self.add_point(image_x_max, image_y_min, 'setup')
+            self.add_point(image_x_max, image_y_max, 'setup')
+            self.add_point(image_x_min, image_y_max, 'setup')
+            self.add_point(image_x_min, image_y_min, 'setup')
+            self.add_point(image_x_max, image_y_min, 'setup')
 
     def add_pen_down_point(self, x, y):
         self.add_special(SpecialInstruction.PEN_UP)
