@@ -4,8 +4,8 @@ import shutil
 import os
 from math import floor
 
-from library import Plotter, Instructions, Image
-from imutils import resize
+from Instructions import Instructions
+from Image import Image
 
 def bucket_pixels_evenly_by_output_colors(image, number_of_colors):
     """
@@ -91,9 +91,9 @@ def process_image(image, method, output_colors):
     raise ValueError("Algorithm does not exist")
 
 
-def horizontal_lines_algorithm(output_filename, processed_image, plotter, output_colors, x_offset, y_offset):
+def horizontal_lines_algorithm(output_filename, processed_image, output_colors, x_offset, y_offset):
     buckets = len(output_colors)
-    instruction_sets = [Instructions(plotter, should_outline=i==0) for i in range(buckets)]
+    instruction_sets = [Instructions(units="mm", x_min = 0, x_max = 280, y_min = -200, y_max = 0, feed_rate=10000, should_outline=i==0) for i in range(buckets)]
     
     # Ignore every other row when plotting. 
     PLOT_EVERY_NTH_ROW = 2
@@ -153,12 +153,11 @@ def folder_setup():
 def main(filename, output_colors, x_offset, y_offset):
     folder_setup()
 
-    plotter = Plotter(units="mm", x_min = 0, x_max = 280, y_min = -200, y_max = 0, feed_rate=10000)
     image = Image(filename)
 
     processed_image = process_image(image=image.prepare(should_resize=False, should_rotate=True), method='bucket_pixels_evenly_by_output_colors', output_colors=output_colors)
 
-    horizontal_lines_algorithm(output_filename=filename, processed_image=processed_image, plotter=plotter, output_colors=output_colors, x_offset=x_offset, y_offset=y_offset)
+    horizontal_lines_algorithm(output_filename=filename, processed_image=processed_image, output_colors=output_colors, x_offset=x_offset, y_offset=y_offset)
 
 main(
     filename='test.png',

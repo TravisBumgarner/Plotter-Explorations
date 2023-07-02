@@ -1,16 +1,15 @@
 from enum import Enum
-import cv2
-from imutils import resize, rotate
 
 class Point:
-    def __init__(self, feed_rate: float, x: float | None = None, y: float | None = None):
+    def __init__(self, plotter, feed_rate: float, x: float | None = None, y: float | None = None):
         self.x = x
         self.y = y
         self.feed_rate = feed_rate
+        self.plotter = plotter
 
         if(x is None and y is None):
             raise ValueError("Point requires an X or Y")
-
+            
     def __str__(self):
         output = "G1 "
         if(self.x is not None):
@@ -21,8 +20,15 @@ class Point:
         return output
 
 
-class Plotter:
-    def __init__(self, units, x_min, x_max, y_min, y_max, feed_rate):
+class SpecialInstruction(Enum):
+    PEN_UP = "M3 S0"
+    PAUSE = "G04 P0.25" # Might need to refine this number
+    PEN_DOWN = "M3 S1000"
+    PROGRAM_END = "M2"
+
+
+class Instructions:
+    def __init__(self, units, x_min, x_max, y_min, y_max, feed_rate, should_outline=False):
         self.units = units
         if units not in ['mm', 'inches']:
             raise ValueError("Units must be mm or inches")  
@@ -31,50 +37,7 @@ class Plotter:
         self.y_min = y_min
         self.y_max = y_max
         self.feed_rate = feed_rate
-    
-    def is_point_valid(self, point: Point):
-        return point.x <= self.x_max and point.y <= self.y_max and point.x >= self.x_min and point.y >= self.y_min
-    
 
-class Image:
-    def __init__(self, filename):
-        self.image = cv2.imread(filename)
-
-    def prepare(self, should_resize=True, should_rotate=True):
-        
-        print('General Preparation:')
-        
-        [original_height, original_width, original_channels] = self.image.shape
-        print(f'\t - Original size: {original_height}h by {original_width}w by {original_channels}channels')
-        self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        print(f'\t - Converted to Grayscale')
-        
-        [grayscale_height, grayscale_width] = self.image.shape
-        print(f'\t - Grayscale size: {grayscale_height}h by {grayscale_width}w by 1channels')
-
-        if should_rotate:
-            self.image = rotate(self.image, 90)
-            [rotated_height, rotated_width] = self.image.shape
-            print(f'\t - Rotated size: {rotated_height}h by {rotated_width}w')
-
-        if should_resize:
-            self.image = should_resize(self.image, height=abs(self.y_min))
-            [resized_height, resized_width] = self.image.shape
-            print(f'\t - Resized size: {resized_height}h by {resized_width}w')
-
-        return self.image
-    
-
-class SpecialInstruction(Enum):
-    PEN_UP = "M3 S0"
-    PAUSE = "G04 P0.25" # Might need to refine this number
-    PEN_DOWN = "M3 S1000"
-    PROGRAM_END = "M2"
-         
-
-class Instructions:
-    def __init__(self, plotter, should_outline=False):
-        self.plotter = plotter
         self.setup_instructions = []
         self.plotting_instructions = []
         self.teardown_instructions = []
@@ -82,22 +45,22 @@ class Instructions:
         self.should_outline = should_outline
         
         # For drawing a bounding box before printing.
-        self.image_x_min = self.plotter.x_max
-        self.image_x_max = self.plotter.x_min
-        self.image_y_min = self.plotter.y_max
-        self.image_y_max = self.plotter.y_min
+        self.image_x_min = self.x_max
+        self.image_x_max = self.x_min
+        self.image_y_min = self.y_max
+        self.image_y_max = self.y_min
 
         for i in range(3):
             self.add_comment('Setup Instructions', 'setup')
             self.add_comment('Plotting Instructions', 'plotting')
             self.add_comment('Teardown Instructions', 'teardown')
 
-        if plotter.units == 'mm':
+        if self.units == 'mm':
             self.setup_instructions.append('G21')
-        if plotter.units == 'inches':
+        if self.units == 'inches':
             self.setup_instructions.append('G20')
 
-        self.setup_instructions.append(f"F{plotter.feed_rate}")
+        self.setup_instructions.append(f"F{self.feed_rate}")
 
         self.teardown_instructions.append(SpecialInstruction.PROGRAM_END.value)
 
@@ -135,10 +98,15 @@ class Instructions:
     def add_point(self, x, y, type="plotting"):
         self.update_max_and_min(x,y)
 
-        point = Point(self.plotter.feed_rate, x, y)
-        
-        if not self.plotter.is_point_valid(point):
-            raise ValueError("Failed to add point, outside dimensions of plotter", point.x, point.y)
+        if (
+            x > self.x_max
+            or y > self.y_max
+            or x < self.x_min
+            or y < self.y_min
+        ):
+            raise ValueError("Failed to add point, outside dimensions of plotter", self.x, self.y)
+
+        point = Point(self.feed_rate, x, y)
         
         if type == "setup":
             self.setup_instructions.append(point)
