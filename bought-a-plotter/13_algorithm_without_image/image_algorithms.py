@@ -4,9 +4,9 @@ from Instructions import Instructions
 Algorithms more heavily based in using a 2D array that started as an image and applying some kind of transform to it.
 """
 
-def horizontal_lines_algorithm(output_filename, processed_image, output_colors, x_offset, y_offset):
+def horizontal_lines_algorithm(plotter, output_filename, processed_image, output_colors, x_offset, y_offset):
     buckets = len(output_colors)
-    instruction_sets = [Instructions(units="mm", x_min = 0, x_max = 280, y_min = -200, y_max = 0, feed_rate=10000, should_outline=i==0) for i in range(buckets)]
+    instruction_sets = [Instructions(plotter, should_outline=i==0) for i in range(buckets)]
     
     # Ignore every other row when plotting. 
     PLOT_EVERY_NTH_ROW = 2
