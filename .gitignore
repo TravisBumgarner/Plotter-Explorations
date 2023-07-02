@@ -4,3 +4,4 @@ dist/
 *.png
 __pycache__
 *.pyc
+output/

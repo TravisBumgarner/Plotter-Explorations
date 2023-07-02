@@ -35,30 +35,34 @@ class Plotter:
     def is_point_valid(self, point: Point):
         return point.x <= self.x_max and point.y <= self.y_max and point.x >= self.x_min and point.y >= self.y_min
     
-    def prepare_image(self, filename):
-        image = cv2.imread(filename)
+
+class Image:
+    def __init__(self, filename):
+        self.image = cv2.imread(filename)
+
+    def prepare(self, should_resize=True, should_rotate=True):
+        
         print('General Preparation:')
         
-        [original_height, original_width, original_channels] = image.shape
+        [original_height, original_width, original_channels] = self.image.shape
         print(f'\t - Original size: {original_height}h by {original_width}w by {original_channels}channels')
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         print(f'\t - Converted to Grayscale')
         
-        [grayscale_height, grayscale_width] = image.shape
+        [grayscale_height, grayscale_width] = self.image.shape
         print(f'\t - Grayscale size: {grayscale_height}h by {grayscale_width}w by 1channels')
 
-        if(original_height > original_width):
-            image = rotate(image, 90)
-            [rotated_height, rotated_width] = image.shape
+        if should_rotate:
+            self.image = rotate(self.image, 90)
+            [rotated_height, rotated_width] = self.image.shape
             print(f'\t - Rotated size: {rotated_height}h by {rotated_width}w')
 
+        if should_resize:
+            self.image = should_resize(self.image, height=abs(self.y_min))
+            [resized_height, resized_width] = self.image.shape
+            print(f'\t - Resized size: {resized_height}h by {resized_width}w')
 
-        # image = resize(image, width=abs(self.x_max), height=abs(self.y_min))
-        image = resize(image, height=abs(self.y_min))
-        [resized_height, resized_width] = image.shape
-        print(f'\t - Resized size: {resized_height}h by {resized_width}w')
-
-        return image
+        return self.image
     
 
 class SpecialInstruction(Enum):
@@ -76,6 +80,17 @@ class Instructions:
         self.teardown_instructions = []
         self.has_plotted_first_point = False
         self.should_outline = should_outline
+        
+        # For drawing a bounding box before printing.
+        self.image_x_min = self.plotter.x_max
+        self.image_x_max = self.plotter.x_min
+        self.image_y_min = self.plotter.y_max
+        self.image_y_max = self.plotter.y_min
+
+        for i in range(3):
+            self.add_comment('Setup Instructions', 'setup')
+            self.add_comment('Plotting Instructions', 'plotting')
+            self.add_comment('Teardown Instructions', 'teardown')
 
         if plotter.units == 'mm':
             self.setup_instructions.append('G21')
@@ -87,30 +102,14 @@ class Instructions:
         self.teardown_instructions.append(SpecialInstruction.PROGRAM_END.value)
 
     def outline_print(self, number_of_outlines=3):
-        # Find outline of all points in plotting_instructions
-        image_x_min = self.plotter.x_max
-        image_x_max = self.plotter.x_min
-        image_y_min = self.plotter.y_max
-        image_y_max = self.plotter.y_min
-
-        for point in self.plotting_instructions:
-            if point.x < image_x_min:
-                image_x_min = point.x
-            if point.x > image_x_max:
-                image_x_max = point.x
-            if point.y < image_y_min:
-                image_y_min = point.y
-            if point.y > image_y_max:
-                image_y_max = point.y
-
-        self.add_comment('Plotting area outline')
+        self.add_comment('Plotting area outline', 'setup')
         for _ in range(number_of_outlines):
             self.add_special(SpecialInstruction.PEN_UP, 'setup')
-            self.add_point(image_x_max, image_y_min, 'setup')
-            self.add_point(image_x_max, image_y_max, 'setup')
-            self.add_point(image_x_min, image_y_max, 'setup')
-            self.add_point(image_x_min, image_y_min, 'setup')
-            self.add_point(image_x_max, image_y_min, 'setup')
+            self.add_point(self.image_x_max, self.image_y_min, 'setup')
+            self.add_point(self.image_x_max, self.image_y_max, 'setup')
+            self.add_point(self.image_x_min, self.image_y_max, 'setup')
+            self.add_point(self.image_x_min, self.image_y_min, 'setup')
+            self.add_point(self.image_x_max, self.image_y_min, 'setup')
 
     def add_pen_down_point(self, x, y):
         self.add_special(SpecialInstruction.PEN_UP)
@@ -123,7 +122,19 @@ class Instructions:
         self.add_pen_down_point(x1, y1)
         self.add_point(x2, y2)
 
+    def update_max_and_min(self, x, y):
+        if x < self.image_x_min:
+            self.image_x_min = x
+        if x > self.image_x_max:
+            self.image_x_max = x
+        if y < self.image_y_min:
+            self.image_y_min = y
+        if y > self.image_y_max:
+            self.image_y_max = y
+
     def add_point(self, x, y, type="plotting"):
+        self.update_max_and_min(x,y)
+
         point = Point(self.plotter.feed_rate, x, y)
         
         if not self.plotter.is_point_valid(point):
@@ -135,18 +146,34 @@ class Instructions:
             self.plotting_instructions.append(point)
         elif type == "teardown":
             self.teardown_instructions.append(point)
+
+    def add_circle(self, x, y, radius, type="plotting"):
+        self.update_max_and_min(x,y) # need to properly define the bounding box for a circle.
+        pass
+
+    def add_rectangle(self, x, y, width, height, type="plotting"):
+        self.update_max_and_min(x,y) # need to properly define the bounding box for a rectangle.
+        pass
         
-    def add_special(self, special_instruction: SpecialInstruction, type="instructions"):
+    def add_special(self, special_instruction: SpecialInstruction, type='plotting'):
         if type == "setup":
             self.setup_instructions.append(special_instruction.value)
-        elif type == "instructions":
+        elif type == 'plotting':
             self.plotting_instructions.append(special_instruction.value)
         elif type == "teardown":
             self.teardown_instructions.append(special_instruction.value)
+        
+    def add_comment(self, comment: str, type='plotting'):
+        if type == "setup":
+            self.setup_instructions.append(f";{comment}")
+        elif type == 'plotting':
+            self.plotting_instructions.append(f";{comment}")
+        elif type == "teardown":
+            self.teardown_instructions.append(f";{comment}")
 
     def print_to_file(self, filename: str):
         if self.should_outline:
-            outline = self.outline_print()
+            self.outline_print()
 
         with open(filename, "w") as file:
             file.write("\n".join([str(instruction) for instruction in self.setup_instructions]))
@@ -154,9 +181,6 @@ class Instructions:
             file.write("\n".join([str(instruction) for instruction in self.plotting_instructions]))
             file.write("\n")
             file.write("\n".join([str(instruction) for instruction in self.teardown_instructions]))
-
-    def add_comment(self, comment: str):
-        self.plotting_instructions.append(f"\n\n; {comment}\n\n")
 
     def get(self):
         return self.plotting_instructions
