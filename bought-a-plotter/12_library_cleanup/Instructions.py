@@ -1,11 +1,10 @@
 from enum import Enum
 
 class Point:
-    def __init__(self, plotter, feed_rate: float, x: float | None = None, y: float | None = None):
+    def __init__(self, feed_rate: float, x: float | None = None, y: float | None = None):
         self.x = x
         self.y = y
         self.feed_rate = feed_rate
-        self.plotter = plotter
 
         if(x is None and y is None):
             raise ValueError("Point requires an X or Y")
