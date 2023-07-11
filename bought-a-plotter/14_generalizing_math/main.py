@@ -23,11 +23,11 @@ def main_with_image(filename, output_colors, x_offset, y_offset):
 
 def main_with_math(output_colors, x_offset, y_offset):
     folder_setup()
-    plotter = Plotter(units="mm", x_min = 0, x_max = 120, y_min = -120, y_max = 0, feed_rate=10000)
-    math_algorithms.bunch_of_lines(plotter=plotter, filename_prefix='bunch_of_lines', output_color="black", hypotenuse=10)
+    plotter = Plotter(units="mm", x_min = 0, x_max = 200, y_min = -160, y_max = 0, feed_rate=10000)
+    math_algorithms.bunch_of_lines(plotter=plotter, filename_prefix='bunch_of_lines', output_colors=output_colors, hypotenuse=10)
 
 main_with_math(
-    output_colors=[ 'blue1', 'blue2', 'blue3', 'blue4'],
+    output_colors=[ 'purple', 'blue', 'yellow'],
     x_offset=0,
     y_offset=0,
 

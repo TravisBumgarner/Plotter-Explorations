@@ -3,7 +3,7 @@ Algorithms more heavily based in plotting points, lines, curves, etc. with mathe
 """
 from Instructions import Instructions
 from Plotter import Plotter
-from random import random
+from random import random, randint
 from math import sin
 
 """
@@ -75,13 +75,13 @@ def wander(plotter: Plotter, filename_prefix, output_colors, x_offset, y_offset)
     border_preview.print_to_file(f'./output/preview.gcode')
     border.print_to_file(f'./output/border.gcode')
 
-def bunch_of_lines(plotter: Plotter, filename_prefix, output_color, hypotenuse):
+def bunch_of_lines(plotter: Plotter, filename_prefix, output_colors, hypotenuse):
     """
     Take in a color. Plot a bunch of lines in a grid with a fixed length and a variable slope.
     """
     border_preview = Instructions(plotter, use_for_preview_only=True)
     border = Instructions(plotter, use_for_border_only=True)
-    instructions = Instructions(plotter)
+    instruction_sets = [Instructions(plotter) for i in range(len(output_colors))]
 
     for x0 in range(plotter.x_min, plotter.x_max, 10):
         for y0 in range(plotter.y_min, plotter.y_max, 10):
@@ -98,13 +98,21 @@ def bunch_of_lines(plotter: Plotter, filename_prefix, output_color, hypotenuse):
                 y2 = y0 + delta_y
 
                 try:
-                    instructions.add_line(x1, y1, x2, y2)
+                    rand = randint(0, len(output_colors))
+                    if rand == len(output_colors):
+                        # Every so often don't plot a line. For Art.
+                        continue
+
+                    instruction_sets[rand].add_line(x1, y1, x2, y2)
                     border_preview.add_line(x1, y1, x2, y2)
                     border.add_line(x1, y1, x2, y2)
                 except:
                     print('skipping point centered on', x0, y0)
                     continue
-    instructions.print_to_file(f'./output/{filename_prefix}_{output_color}.gcode')
+    
+    for i in range(len(output_colors)):
+        instruction_sets[i].print_to_file(f'./output/{filename_prefix}_{i}_{output_colors[i]}.gcode')
+
     border_preview.print_to_file(f'./output/preview.gcode')
     border.print_to_file(f'./output/border.gcode')
 
