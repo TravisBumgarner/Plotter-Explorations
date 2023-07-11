@@ -24,7 +24,7 @@ def main_with_image(filename, output_colors, x_offset, y_offset):
 def main_with_math(output_colors, x_offset, y_offset):
     folder_setup()
     plotter = Plotter(units="mm", x_min = 0, x_max = 120, y_min = -120, y_max = 0, feed_rate=10000)
-    math_algorithms.wander(plotter=plotter, filename_prefix='wander', output_colors=output_colors, x_offset=x_offset, y_offset=y_offset)
+    math_algorithms.bunch_of_lines(plotter=plotter, filename_prefix='bunch_of_lines', output_color="black", hypotenuse=10)
 
 main_with_math(
     output_colors=[ 'blue1', 'blue2', 'blue3', 'blue4'],

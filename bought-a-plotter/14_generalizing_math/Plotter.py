@@ -1,4 +1,10 @@
 class Plotter:
+    x_min: int
+    x_max: int
+    y_min: int
+    y_max: int
+    feed_rate: int
+
     def __init__(self, units, x_min, x_max, y_min, y_max, feed_rate):
         self.units = units
         if units not in ['mm', 'inches']:

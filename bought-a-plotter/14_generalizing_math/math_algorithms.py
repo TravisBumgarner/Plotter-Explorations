@@ -4,13 +4,19 @@ Algorithms more heavily based in plotting points, lines, curves, etc. with mathe
 from Instructions import Instructions
 from Plotter import Plotter
 from random import random
+from math import sin
+
+"""
+"""
+
 
 def wander(plotter: Plotter, filename_prefix, output_colors, x_offset, y_offset):
-    border_preview = Instructions(plotter, use_for_preview_only=True)
-    border = Instructions(plotter, use_for_border_only=True)
     """
     Take in 4 colors, wander outward from the center. Each color will wander towards a different quadrant of the X and Y axis.
     """
+    border_preview = Instructions(plotter, use_for_preview_only=True)
+    border = Instructions(plotter, use_for_border_only=True)
+
 
     if len(output_colors) != 4:
         raise Exception('wander algorithm requires 4 colors')
@@ -68,3 +74,42 @@ def wander(plotter: Plotter, filename_prefix, output_colors, x_offset, y_offset)
         instructions.print_to_file(f'./output/{filename_prefix}_{i}_{output_colors[i]}.gcode')
     border_preview.print_to_file(f'./output/preview.gcode')
     border.print_to_file(f'./output/border.gcode')
+
+def bunch_of_lines(plotter: Plotter, filename_prefix, output_color, hypotenuse):
+    """
+    Take in a color. Plot a bunch of lines in a grid with a fixed length and a variable slope.
+    """
+    border_preview = Instructions(plotter, use_for_preview_only=True)
+    border = Instructions(plotter, use_for_border_only=True)
+    instructions = Instructions(plotter)
+
+    for x0 in range(plotter.x_min, plotter.x_max, 10):
+        for y0 in range(plotter.y_min, plotter.y_max, 10):
+                # Should experiment with the slope calculation.
+                slope = sin((x0 ** 2 + y0 ** 2) / (plotter.x_max ** 2 + plotter.y_max ** 2))
+
+                delta_x = hypotenuse * (1 / (1 + slope ** 2)) ** 0.5
+                delta_y = delta_x * slope
+
+                x1 = x0 - delta_x
+                y1 = y0 - delta_y
+
+                x2 = x0 + delta_x
+                y2 = y0 + delta_y
+
+                try:
+                    instructions.add_line(x1, y1, x2, y2)
+                    border_preview.add_line(x1, y1, x2, y2)
+                    border.add_line(x1, y1, x2, y2)
+                except:
+                    print('skipping point centered on', x0, y0)
+                    continue
+    instructions.print_to_file(f'./output/{filename_prefix}_{output_color}.gcode')
+    border_preview.print_to_file(f'./output/preview.gcode')
+    border.print_to_file(f'./output/border.gcode')
+
+
+
+        
+
+
