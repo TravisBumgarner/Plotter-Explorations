@@ -3,11 +3,11 @@ import numpy as np
 from library import Instructions
 from imutils import resize
 from math import floor
-SCALE = 3
 
 # I could probably not have me hit the bounds of the plotter with some better math.
 # Oh well. For now, this mess.
 # need to some point account for offsets better with large prints.
+SCALE = 3
 magic_number = 5
 hmmm = Instructions()
 OFFSET_X = 0
