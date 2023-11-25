@@ -1,5 +1,5 @@
 from gcode2dplotterart import Plotter2D
-from random import randrange, choice, randint, shuffle, random
+from random import randrange, shuffle
 import math
 
 LINE_WIDTH = 1.0
@@ -33,7 +33,7 @@ plotter = Plotter2D(
 )
 
 shuffle(COLORS)
-color_choices = COLORS[0:3]
+color_choices = COLORS[0:4]
 
 for color in color_choices:
     plotter.add_layer(
@@ -45,16 +45,10 @@ for color in color_choices:
 x_center = (plotter.x_max - plotter.x_min) / 2
 y_center = randrange(int(plotter.y_min), int(plotter.y_max))
 
-print("center", x_center, y_center)
-print("dims", plotter.width, plotter.height)
-
-vertical_angle = math.degrees(
-    math.atan(int(plotter.width / 2) / (plotter.height - y_center))
-)
+vertical_angle = math.degrees(math.atan(int(plotter.width / 2) / (y_center)))
 
 for color in color_choices:
-    # box_side_length = randrange(1, int(plotter.width))
-    box_side_length = randrange(20, 100)
+    box_side_length = randrange(1, int(plotter.width))
 
     x_left_of_center = box_side_length / 2
     y_below_center = x_left_of_center / math.tan(math.radians(vertical_angle))
@@ -64,10 +58,6 @@ for color in color_choices:
 
     x_end = x_start + box_side_length
     y_end = y_start + box_side_length
-
-    print(x_start, x_end, y_start, y_end)
-
-    plotter.layers[color["title"]].add_circle(x_center, y_center, radius=2)
 
     plotter.layers[color["title"]].add_rectangle(
         x_start=x_start, y_start=y_start, x_end=x_end, y_end=y_end
