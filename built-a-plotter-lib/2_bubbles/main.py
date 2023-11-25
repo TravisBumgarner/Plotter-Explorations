@@ -13,7 +13,7 @@ COLORS = [
 
 # Create a plotter object
 plotter = Plotter2D(
-    title="Circles",
+    title="Bubbles",
     x_min=0,
     x_max=260,
     y_min=0,
