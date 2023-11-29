@@ -6,10 +6,10 @@ import math
 LINE_WIDTH = 2.5
 
 COLORS = [
-    {"title": "color1", "color": "#A2FFF8"},
-    {"title": "color2", "color": "#FF0096"},
-    {"title": "color3", "color": "#AD00FF"},
-    {"title": "color4", "color": "#E9E9E9"},
+    {"title": "color1", "color": "darkslategrey"},
+    {"title": "color2", "color": "silver"},
+    {"title": "color3", "color": "cornsilk"},
+    {"title": "color4", "color": "tan"},
 ]
 
 plotter = Plotter2D(
@@ -48,7 +48,7 @@ def josef_albers(x_min: float, y_min: float, side_length: float):
 
     shuffle(colors)
 
-    side_padding = int(side_length * 0.2)
+    side_padding = LINE_WIDTH * 5
     x_center = x_min + side_length / 2
     y_center = randrange(
         int(y_min + side_padding), int(y_min + side_length - side_padding)
