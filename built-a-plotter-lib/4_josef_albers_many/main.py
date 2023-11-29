@@ -1,11 +1,11 @@
 from gcode2dplotterart import Plotter2D
-from random import randrange, shuffle
+from random import randrange, shuffle, random
 import math
 from typing import Dict, List, Union
 import time
 
 print("hi")
-LINE_WIDTH = 5
+LINE_WIDTH = 2.5
 
 COLORS = [
     {"title": "color1", "color": "#A2FFF8"},
@@ -18,9 +18,9 @@ COLORS = [
 plotter = Plotter2D(
     title="Josef Albers Homage",
     x_min=0,
-    x_max=200,
+    x_max=250,
     y_min=0,
-    y_max=200,
+    y_max=180,
     feed_rate=10000,
 )
 
@@ -37,12 +37,16 @@ def josef_albers(x_min: float, y_min: float, side_length: float):
 
     side_padding = int(side_length * 0.2)
     x_center = x_min + side_length / 2
-    # y_center = randrange(int(y_min), int(y_min + side_length))
-    y_center = y_min + 10
+    y_center = randrange(
+        int(y_min + side_padding), int(y_min + side_length - side_padding)
+    )
 
     vertical_angle = math.degrees(math.atan(int(side_length / 2) / (y_center - y_min)))
 
-    square_side_length_percentages = [0.2, 0.4, 0.6, 0.8, 1]
+    square_side_length_percentages = sorted([random() for i in range(len(COLORS))])
+    print(square_side_length_percentages)
+    # square_side_length_percentages = [0.2, 0.4, 0.6, 0.8, 1]
+    # square_side_length_percentages = [0.2, 0.4, 0.6, 0.8, 1]
 
     square_side_lengths = [
         int(side_length * percentage) for percentage in square_side_length_percentages
@@ -87,13 +91,15 @@ def josef_albers(x_min: float, y_min: float, side_length: float):
 
             current_side_length += LINE_WIDTH
 
+        # Give a little bit of spacing between color layers.
+        current_side_length += LINE_WIDTH / 2
+
 
 SIDE_LENGTH = 25
 
-for x in range(0, plotter.width - SIDE_LENGTH, SIDE_LENGTH):
-    for y in range(0, plotter.height - SIDE_LENGTH, SIDE_LENGTH):
+for x in range(0, plotter.width - SIDE_LENGTH, SIDE_LENGTH + 5):
+    for y in range(0, plotter.height - SIDE_LENGTH, SIDE_LENGTH + 5):
         josef_albers(x, y, SIDE_LENGTH)
 
-# josef_albers(50, 50, 50)
 plotter.preview()
 plotter.save()
