@@ -1,0 +1,12 @@
+{
+  "mypy.runUsingActiveInterpreter": true,
+  "mypy.targets": [],
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "editor.detectIndentation": false,
+  "editor.formatOnSave": true,
+  "flake8.args": [
+    "--max-line-length=160"
+  ],
+}
