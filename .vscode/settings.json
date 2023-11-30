@@ -2,5 +2,10 @@
     "python.formatting.provider": "black",
     "files.associations": {
         "random": "cpp"
-    }
+    },
+    "mypy.runUsingActiveInterpreter": true,
+    "flake8.args": [
+      "--max-line-length=250"
+    ],
+    "editor.formatOnSave": false,
 }
