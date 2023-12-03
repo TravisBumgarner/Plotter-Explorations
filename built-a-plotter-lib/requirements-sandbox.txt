@@ -4,7 +4,7 @@ contourpy==1.2.0
 cycler==0.12.1
 flake8==6.1.0
 fonttools==4.45.1
-gcode2dplotterart==0.0.15
+gcode2dplotterart==1.1.0
 imutils==0.5.4
 kiwisolver==1.4.5
 matplotlib==3.8.2
