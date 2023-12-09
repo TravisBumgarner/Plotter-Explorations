@@ -105,7 +105,7 @@ max_circle_radius = sorted(
 max_circle_radius_with_padding = max_circle_radius + PADDING
 
 # PIXELS_PER_SAMPLE has been lost and is now unhelpful
-img = read_and_prep_image("./test.jpg", side_length=PIXELS_PER_SAMPLE)
+img = read_and_prep_image("./test.png", side_length=PIXELS_PER_SAMPLE)
 img = evenly_distribute_pixels_per_nth_percent_of_grayscale_range(
     img, len(LUMINOSITY_THRESHOLD__TO_DOT_RADIUS_MAPPING.values())
 )
