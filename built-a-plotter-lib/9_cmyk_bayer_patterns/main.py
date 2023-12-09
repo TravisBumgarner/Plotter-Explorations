@@ -2,6 +2,7 @@ from gcode2dplotterart import Plotter2D
 import cv2
 from typing import List, Tuple
 from random import shuffle
+import time
 
 # TODO - make a dictionary of primaries to other colors.
 
@@ -89,6 +90,36 @@ def map_color(sample_square, pixels_per_sample_side):
     return color_name
 
 
+# def map_color(sample_square, pixels_per_sample_side):
+#     if sample_square.shape != (pixels_per_sample_side, pixels_per_sample_side, 3):
+#         raise ValueError(
+#             f"Input sample must be a {pixels_per_sample_side}x{pixels_per_sample_side} square with 3 color channels."
+#         )
+
+#     # Reshape the sample_square into a 2D array
+#     reshaped_sample = sample_square.reshape(-1, 3)
+
+#     # Find the nearest color for each pixel using NumPy
+#     nearest_colors = np.apply_along_axis(find_nearest_color, 1, reshaped_sample)
+
+#     # Count occurrences of each color in the sample using NumPy
+#     unique_colors, counts = np.unique(nearest_colors, axis=0, return_counts=True)
+
+#     # Get the color with the highest count
+#     dominant_color = unique_colors[np.argmax(counts)]
+
+#     # Convert to a regular Python list before creating a tuple
+#     dominant_color_list = (
+#         dominant_color.tolist()
+#         if isinstance(dominant_color, np.ndarray)
+#         else dominant_color
+#     )
+
+#     color_name = rgb_to_color_name.get(tuple(dominant_color_list))
+
+#     return color_name
+
+
 def read_and_prep_image(
     filename: str,
 ) -> List[List[Tuple[int, int, int]]]:
@@ -98,7 +129,7 @@ def read_and_prep_image(
 
     img = cv2.imread(filename)  # Reads in image as BGR
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    print("original image shape", img.shape)
+    # print("original image shape", img.shape)
 
     # rounded_width = int(math.floor(img.shape[0] / side_length) * side_length)
     # rounded_height = int(math.floor(img.shape[1] / side_length) * side_length)
@@ -145,10 +176,27 @@ def plot_points_per_cmyk_ratio(
     points_per_sample_side,
 ):
     points = []
+    # print("sampling", points_per_sample_side**2)
     for color, percentage in cmyk_ratio.items():
         num_points = int(percentage / 100 * points_per_sample_side**2)
+        # print("\t", color, num_points)
         for i in range(num_points):
             points.append(color)
+
+    # Need to handle the situation where the number of points is less than the number of points per sample side.
+    # One such way this occurs is if the points_per_sample_side is odd.
+    filtered_dict = {k: v for k, v in cmyk_ratio.items() if v != 0}
+    # Sort the dictionary by values in descending order
+    sorted_dict = list(
+        dict(
+            sorted(filtered_dict.items(), key=lambda item: item[1], reverse=True)
+        ).keys()
+    )
+
+    current_index = 0
+    while len(points) < points_per_sample_side**2:
+        points.append(sorted_dict[current_index % len(sorted_dict)])
+        current_index += 1
 
     shuffle(points)
 
@@ -169,11 +217,11 @@ def plot_points_per_cmyk_ratio(
 
 def main():
     mm_per_section_side = 10
-    points_per_sample_side = 2
-    pixels_per_sample_side = 100
-    section_padding = 1.2
+    points_per_sample_side = 7
+    pixels_per_sample_side = 1
 
-    img = read_and_prep_image("./test.png")
+    img = read_and_prep_image("./squares.png")
+
     cmyk_color_ratios = image_to_cmyk_color_ratios(
         img, pixels_per_sample_side=pixels_per_sample_side
     )
@@ -181,12 +229,10 @@ def main():
     for row_index, row in enumerate(cmyk_color_ratios):
         for col_index, cmyk_ratio in enumerate(row):
             total_rows = len(cmyk_color_ratios)
-            x_start_mm = (
-                col_index * mm_per_section_side * section_padding + mm_per_section_side
-            )
+            x_start_mm = col_index * mm_per_section_side + mm_per_section_side
             y_start_mm = (
                 total_rows - row_index
-            ) * mm_per_section_side * section_padding + mm_per_section_side
+            ) * mm_per_section_side + mm_per_section_side
 
             plot_points_per_cmyk_ratio(
                 cmyk_ratio=cmyk_ratio,
@@ -199,4 +245,7 @@ def main():
 
 
 if __name__ == "__main__":
+    start_time = time.time()
     main()
+    end_time = time.time()
+    # print(f"Total time: {end_time - start_time}")
