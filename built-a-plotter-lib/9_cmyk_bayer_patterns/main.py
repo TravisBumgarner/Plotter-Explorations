@@ -208,7 +208,7 @@ def plot_points_per_cmyk_ratio(
 
 
 def main():
-    filename = "./mee.jpg"
+    filename = "./desktop.png"
 
     # The number of pixels to sample along a side of the image. If an image is 100x100, and pixels_per_sample_side is 10, then there will be 10x10 samples.
     pixels_per_sample_side = 15

@@ -1,6 +1,5 @@
 from gcode2dplotterart import Plotter2D
 import math
-from random import randint
 
 LINE_WIDTH = 0.5
 LAYER_0 = {"title": "black", "color": "black", "line_width": LINE_WIDTH}
