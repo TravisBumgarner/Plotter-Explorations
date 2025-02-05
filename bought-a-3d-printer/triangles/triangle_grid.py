@@ -22,7 +22,9 @@ plotter = Plotter3D(
 )
 
 black_pen_layer = "black_pen_layer"
-plotter.add_layer(black_pen_layer, color="black", line_width=1.0)
+plotter.add_layer(black_pen_layer, color="black", line_width=0.5)
+blue_pen_layer = "blue_pen_layer"
+plotter.add_layer(blue_pen_layer, color="blue", line_width=0.5)
 
 
 import math
@@ -39,7 +41,7 @@ def rotate_point(point, origin, angle_degrees):
     
     return (qx, qy)
 
-def equilateral_triangle(origin, side_length, angle_degrees=0):
+def draw_equilateral_triangle(origin, side_length, angle_degrees=0):
     """Generate an equilateral triangle with a given origin, side length, and optional rotation."""
     x, y = origin
     h = (math.sqrt(3) / 2) * side_length  # Height of the triangle
@@ -56,16 +58,24 @@ def equilateral_triangle(origin, side_length, angle_degrees=0):
 
     return [v1, v2, v3, v1]
 
-# Example usage
-origin = (X_MIN + 50, Y_MIN + 50)
-side_length = 10
-angle_degrees = 180  # Rotate counterclockwise
+side_length = 10.0
+width = side_length
+triangle_height = side_length * math.sqrt(3) / 2  # Full height of a single triangle
+row_height = triangle_height  # Row spacing needs to be half the triangle height
 
-triangle_vertices = equilateral_triangle(origin, side_length, angle_degrees)
-print(triangle_vertices)
+angle_degrees = 0
+for x in range(0, 15):
+    for y in range(0, 15):
+        x_transform = 0
+        if y % 2 == 0:
+            x_transform = side_length / 2
 
-plotter.layers[black_pen_layer].add_path(triangle_vertices)
+        x_offset = side_length * x + x_transform
+        origin = (X_MIN + x_offset, Y_MIN + y * row_height)
+        angle_degrees = 0
+        path = draw_equilateral_triangle(origin, side_length, angle_degrees)
+        plotter.layers[black_pen_layer].add_path(path)
 
 plotter.preview()
-
 plotter.save()
+
