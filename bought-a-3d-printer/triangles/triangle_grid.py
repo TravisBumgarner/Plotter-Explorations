@@ -42,14 +42,15 @@ def rotate_point(point, origin, angle_degrees):
     return (qx, qy)
 
 def draw_equilateral_triangle(origin, side_length, angle_degrees=0):
-    """Generate an equilateral triangle with a given origin, side length, and optional rotation."""
+    """Generate an equilateral triangle with a given origin as center point, side length, and optional rotation."""
     x, y = origin
     h = (math.sqrt(3) / 2) * side_length  # Height of the triangle
-
-    # Define initial unrotated vertices
-    v1 = (x, y)
-    v2 = (x + side_length, y)
-    v3 = (x + side_length / 2, y + h)
+    
+    # Calculate vertices relative to center
+    # Move back by half the width and down by 1/3 of the height to center the triangle
+    v1 = (x - side_length/2, y - h/3)
+    v2 = (x + side_length/2, y - h/3)
+    v3 = (x, y + 2*h/3)
 
     # Rotate vertices around the origin
     v1 = rotate_point(v1, origin, angle_degrees)
@@ -62,10 +63,19 @@ side_length = 10.0
 width = side_length
 triangle_height = side_length * math.sqrt(3) / 2  # Full height of a single triangle
 row_height = triangle_height  # Row spacing needs to be half the triangle height
+print('height', row_height)
+
+
+COUNT = 15
+PADDING = 10
+# X_MIN += PADDING
+# X_MAX -= PADDING
+# Y_MIN += PADDING
+# Y_MAX -= PADDING
 
 angle_degrees = 0
-for x in range(0, 15):
-    for y in range(0, 15):
+for y in range(0, COUNT):
+    for x in range(0, COUNT):
         x_transform = 0
         if y % 2 == 0:
             x_transform = side_length / 2
@@ -75,6 +85,21 @@ for x in range(0, 15):
         angle_degrees = 0
         path = draw_equilateral_triangle(origin, side_length, angle_degrees)
         plotter.layers[black_pen_layer].add_path(path)
+        path = draw_equilateral_triangle(origin, side_length / 2, angle_degrees)
+        plotter.layers[blue_pen_layer].add_path(path)
+
+    for x in range(0, COUNT - 1):
+        x_transform = 0
+        if y % 2 == 1:
+            x_transform = side_length / 2
+
+        x_offset = side_length * x + x_transform
+        origin = (X_MIN + x_offset + 10, Y_MIN + y * row_height + side_length ** 0.5) 
+        angle_degrees = 180
+        path = draw_equilateral_triangle(origin, side_length / 2, angle_degrees)
+        plotter.layers[blue_pen_layer].add_path(path)
+
+
 
 plotter.preview()
 plotter.save()
