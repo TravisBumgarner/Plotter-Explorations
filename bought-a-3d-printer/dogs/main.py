@@ -4,7 +4,7 @@ from gcode2dplotterart import experimental_photo_utils
 import math
 
 X_MIN = 0
-X_MAX = 180
+X_MAX = 170
 Y_MIN = 70
 Y_MAX = 230
 Z_PLOTTING_HEIGHT = 0
@@ -14,7 +14,7 @@ MAX_WIDTH = X_MAX - X_MIN
 MAX_HEIGHT = Y_MAX - Y_MIN
 
 plotter = Plotter3D(
-    title="Triangles",
+    title="Dogs",
     x_min=X_MIN,
     x_max=X_MAX,
     y_min=Y_MIN,
@@ -28,27 +28,27 @@ plotter = Plotter3D(
 
 LAYERS = [
     {
-        "title": "black",
+        "title": "black_1",
         "color": "#252e2b",
         "line_width": 1,
     },
     {
-        "title": "blue",
+        "title": "blue_40",
         "color": "#3b65c1",
         "line_width": 1,
     },
     {
-        "title": "purple",
+        "title": "purple_33",
         "color": "#8e3392",
         "line_width": 1,
     },
     {
-        "title": "orange",
+        "title": "orange_7",
         "color": "#e76500",
         "line_width": 1,
     },
     {
-        "title": "hotpink",
+        "title": "yellow_11",
         "color": "#e0c200",
         "line_width": 1,
     },
@@ -58,8 +58,8 @@ for layer in LAYERS:
         layer["title"], color=layer["color"], line_width=layer["line_width"]
     )
 
-# image_path = "/Users/travisbumgarner/Desktop/inputs/2.jpg" #Juana
-image_path = "/Users/travisbumgarner/Desktop/inputs/3.jpg"
+# image_path = "/Users/travisbumgarner/Documents/inputs/2.jpg" #Juana
+image_path = "/Users/travisbumgarner/Documents/inputs/3.jpg" # Nira
 
 image = experimental_photo_utils.load_image(image_path)
 image = experimental_photo_utils.resize_image(image, MAX_WIDTH, MAX_HEIGHT)
