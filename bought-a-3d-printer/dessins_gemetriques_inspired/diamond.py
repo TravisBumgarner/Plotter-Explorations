@@ -78,8 +78,6 @@ def plot_cluster(start, side_length):
 
     return [random.choice(available_points)]
         
-
-
 def main(start):
     counter = 0
     points_seen = set()

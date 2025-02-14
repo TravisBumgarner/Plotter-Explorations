@@ -6,16 +6,20 @@ X_MAX = 170
 Y_MIN = 70
 Y_MAX = 230
 Z_PLOTTING_HEIGHT = 0
-Z_NAVIGATION_HEIGHT = 4
+Z_NAVIGATION_HEIGHT = 1
+layer = {
+    "title": "red_4",
+    "color": "#dd3031",
+    "line_width": 0.4,
+}
 
 MAX_WIDTH = X_MAX - X_MIN
 MAX_HEIGHT = Y_MAX - Y_MIN
 
-# Take in an image, such as size 1000x1000. Sample at 5px per, 
+# Take in an image, such as size 1000x1000. Sample a 5px square for example, 
 # which results in 200x200 grid. Then we can draw 200x200 circles at diameter 1 each.#
-SAMPLE_LENGTH = 5
-# TBH the math here doesn't quite make sense.
-OUTPUT_DIAMETER = SAMPLE_LENGTH / 5
+SAMPLE_LENGTH = 10
+OUTPUT_DIAMETER = 2
 
 RADIUS_MAPPING = [
     0.9 * OUTPUT_DIAMETER / 2,
@@ -25,36 +29,38 @@ RADIUS_MAPPING = [
     0.1 * OUTPUT_DIAMETER / 2
 ]
 
+
 plotter = Plotter3D(
-    title="Dogs",
+    title="Circles",
     x_min=X_MIN,
     x_max=X_MAX,
     y_min=Y_MIN,
     y_max=Y_MAX,
     z_plotting_height=Z_PLOTTING_HEIGHT,
     z_navigation_height=Z_NAVIGATION_HEIGHT,
-    feed_rate=10_000,  # Default feed rate
+    feed_rate=10_000,  
     output_directory="./output",
-    handle_out_of_bounds="Warning",  # Warn if points are out of bounds
+    handle_out_of_bounds="Warning",  
 )
 
-LAYERS = [
-    {
-        "title": "black_1",
-        "color": "#252e2b",
-        "line_width": 1,
-    },
-]
-
-for layer in LAYERS:
-    plotter.add_layer(
-        layer["title"], color=layer["color"], line_width=layer["line_width"]
-    )
+plotter.add_layer(
+    layer["title"], color=layer["color"], line_width=layer["line_width"]
+)
 
 image_path = "/Users/travisbumgarner/Documents/gf/3.jpg" 
 
 image = experimental_photo_utils.load_image(image_path)
-image = experimental_photo_utils.resize_image(image, MAX_WIDTH * SAMPLE_LENGTH, MAX_HEIGHT * SAMPLE_LENGTH)
+
+# Calculate number of circles that will fit in each dimension
+circles_width = MAX_WIDTH / OUTPUT_DIAMETER
+circles_height = MAX_HEIGHT / OUTPUT_DIAMETER
+
+# Resize image to match the number of samples we'll take
+image = experimental_photo_utils.resize_image(
+    image, 
+    int(circles_width * SAMPLE_LENGTH), 
+    int(circles_height * SAMPLE_LENGTH)
+)
 # Convert image to float32 before processing to prevent overflow
 image = image.astype('float32')
 image = experimental_photo_utils.grayscale_image(image, method="average")
@@ -94,17 +100,15 @@ for row_index in range(0, image.shape[0], SAMPLE_LENGTH):
         radius = RADIUS_MAPPING[average_area(row_index, col_index)]
         if radius == -1:
             continue
-        plotter.layers['black_1'].add_circle(
-            x_center=X_MIN + col_index / SAMPLE_LENGTH,
-            y_center=Y_MIN + row_index / SAMPLE_LENGTH,
-            radius=radius)
         
-        while radius > 0:
-            plotter.layers['black_1'].add_circle(
-                x_center=X_MIN + col_index / SAMPLE_LENGTH,
-                y_center=Y_MIN + row_index / SAMPLE_LENGTH,
-                radius=radius)
-            radius -= 1
+        # Start with the outer radius and draw concentric circles inward
+        current_radius = radius
+        while current_radius > 0:
+            plotter.layers['red_4'].add_circle(
+                x_center=X_MIN + (col_index / SAMPLE_LENGTH) * OUTPUT_DIAMETER,
+                y_center=Y_MIN + (row_index / SAMPLE_LENGTH) * OUTPUT_DIAMETER,
+                radius=current_radius)
+            current_radius -= layer['line_width']
         
 plotter.preview()
 plotter.save()

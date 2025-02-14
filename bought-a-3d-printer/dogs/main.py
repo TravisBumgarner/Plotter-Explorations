@@ -58,8 +58,8 @@ for layer in LAYERS:
         layer["title"], color=layer["color"], line_width=layer["line_width"]
     )
 
-# image_path = "/Users/travisbumgarner/Documents/inputs/2.jpg" #Juana
-image_path = "/Users/travisbumgarner/Documents/inputs/3.jpg" # Nira
+image_path = "/Users/travisbumgarner/Documents/inputs/2.jpg" #Juana
+# image_path = "/Users/travisbumgarner/Documents/inputs/3.jpg" # Nira
 
 image = experimental_photo_utils.load_image(image_path)
 image = experimental_photo_utils.resize_image(image, MAX_WIDTH, MAX_HEIGHT)
